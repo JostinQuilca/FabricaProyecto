@@ -1,0 +1,79 @@
+name: Pipeline CI - Fábrica Académica (Node.js)
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  ci:
+    name: Integración Continua (Node.js & Verificación)
+    runs-on: ubuntu-latest
+
+    steps:
+      # [PASO 2] Descarga del código fuente
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      # [PASO 2] Configuración limpia de Node.js
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      # [PASO 2] Instalación limpia de dependencias del Backend
+      - name: Instalar dependencias del Backend
+        run: |
+          cd backend
+          npm ci
+
+  docker:
+    name: Construcción y Push de Imagen Docker
+    needs: ci # [PASO 4] Este job depende de que la instalación base pase sin errores
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      # Configuración del motor de construcción Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # [PASO 4] Autenticación automática en GitHub Container Registry
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # [PASO 4] Compilación local temporal de la imagen
+      - name: Build imagen Docker (Local)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          load: true # Carga la imagen localmente en el runner para la auditoría de Trivy
+          tags: ghcr.io/${{ github.repository }}:test
+
+      # [PASO 3] Escaneo de seguridad del contenedor con Trivy
+      - name: Escaneo de Seguridad con Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'ghcr.io/${{ github.repository }}:test'
+          format: 'table'
+          exit-code: '0'
+          severity: 'CRITICAL,HIGH'
+
+      # [PASO 4] Publicación definitiva de la imagen en tu GHCR privado
+      - name: Build and Push a GHCR
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:${{ github.sha }}

@@ -1,0 +1,140 @@
+.dashboard-layout {
+  min-height: 100vh;
+  background-color: var(--bg-color);
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: var(--surface-color);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      background: var(--primary-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      border-radius: var(--radius-md);
+      font-size: 1.25rem;
+    }
+
+    h1 {
+      font-size: 1.25rem;
+      margin: 0;
+      color: var(--text-primary);
+    }
+  }
+
+  .user-profile {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      background: var(--secondary-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      border-radius: 50%;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+
+      .name {
+        font-weight: 500;
+        font-size: 0.875rem;
+      }
+
+      .role {
+        font-size: 0.75rem;
+      }
+    }
+
+    .btn-logout {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: var(--radius-md);
+      transition: all 0.2s;
+
+      &:hover {
+        background-color: rgba(220, 38, 38, 0.1);
+        color: var(--error-color);
+      }
+    }
+  }
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: 1rem;
+  font-weight: 600;
+
+  &.admin { background-color: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+  &.docente { background-color: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+  &.estudiante { background-color: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+}
+
+.content {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.welcome-card {
+  padding: 2rem;
+  h2 { font-size: 1.875rem; color: var(--primary-color); }
+  p { margin: 0; font-size: 1.1rem; }
+}
+
+.mt-8 { margin-top: 2rem; }
+.mb-4 { margin-bottom: 1rem; }
+
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.module-card {
+  display: block;
+  text-decoration: none;
+  background: var(--surface-color);
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  font-weight: 500;
+  text-align: center;
+  color: var(--text-primary);
+  transition: all 0.2s;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+  }
+}

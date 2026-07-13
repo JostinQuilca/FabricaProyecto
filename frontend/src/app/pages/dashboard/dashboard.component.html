@@ -1,0 +1,51 @@
+<div class="dashboard-layout">
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">FA</div>
+      <h1>Sistema Académico</h1>
+    </div>
+    <div class="user-profile" *ngIf="user">
+      <div class="avatar">{{ user.nombre.charAt(0).toUpperCase() }}</div>
+      <div class="user-info">
+        <span class="name">{{ user.nombre }}</span>
+        <span class="role badge" [ngClass]="user.rol.toLowerCase()">{{ user.rol }}</span>
+      </div>
+      <button class="btn-logout" (click)="logout()" title="Cerrar sesión">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="content">
+    <div class="welcome-card glass-panel" *ngIf="user">
+      <h2>¡Hola, {{ user.nombre }}!</h2>
+      <p>Bienvenido a tu panel de {{ user.rol.toLowerCase() }}. Aquí podrás gestionar todas tus actividades.</p>
+    </div>
+
+    <!-- Specific content based on role (Placeholder) -->
+    <div class="role-modules mt-8">
+      <h3 class="mb-4">Módulos Disponibles</h3>
+      
+      <div class="modules-grid">
+        <!-- ADMIN MODULES -->
+        <ng-container *ngIf="user?.rol === Role.ADMIN">
+          <a routerLink="/admin" class="module-card">🛠️ Panel de Administración</a>
+          <a routerLink="/materias" class="module-card">📚 Gestión de Materias</a>
+          <a routerLink="/inscripciones" class="module-card">📝 Gestión de Inscripciones</a>
+        </ng-container>
+
+        <!-- DOCENTE MODULES -->
+        <ng-container *ngIf="user?.rol === Role.DOCENTE">
+          <a routerLink="/materias" class="module-card">📚 Mis Materias</a>
+          <a routerLink="/inscripciones" class="module-card">📝 Inscripciones</a>
+        </ng-container>
+
+        <!-- ESTUDIANTE MODULES -->
+        <ng-container *ngIf="user?.rol === Role.ESTUDIANTE">
+          <a routerLink="/materias" class="module-card">📚 Catálogo de Materias</a>
+          <a routerLink="/inscripciones" class="module-card">📝 Mis Inscripciones</a>
+        </ng-container>
+      </div>
+    </div>
+  </main>
+</div>

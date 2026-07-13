@@ -1,0 +1,12 @@
+{
+  "name": "@fabrica/design-system",
+  "version": "1.0.0",
+  "description": "CA-001 · Design System de la Fábrica: tokens de color, tipografía Inter, componentes base (formularios, botones, tablas, badges, glassmorphism).",
+  "main": "tokens.json",
+  "exports": {
+    "./tokens": "./tokens.json",
+    "./styles": "./styles.scss"
+  },
+  "keywords": ["fabrica", "core-asset", "design-system", "scss", "tokens"],
+  "license": "MIT"
+}

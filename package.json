@@ -1,0 +1,28 @@
+{
+  "name": "fabrica-software-academico",
+  "version": "2.0.0",
+  "description": "Fábrica de Software Académico — Línea de Productos de Software (SPLE). Monorepo con Core Assets reutilizables.",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev:backend": "npm run dev --workspace=backend",
+    "start:frontend": "npm start --workspace=frontend",
+    "build:frontend": "npm run build --workspace=frontend",
+    "db:migrate:academico": "npm run db:migrate:academico --workspace=backend",
+    "fabrica:generar": "node crear_nueva_app.js"
+  },
+  "keywords": [
+    "sple",
+    "software-product-line",
+    "fabrica-de-software",
+    "core-assets",
+    "graphql",
+    "angular"
+  ],
+  "author": "Equipo Fábrica de Software (Alex Luna, Leonel Arellano, Jostin Quilca)",
+  "license": "MIT"
+}

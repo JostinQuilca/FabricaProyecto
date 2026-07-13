@@ -1,0 +1,22 @@
+# Dependencias
+node_modules/
+**/node_modules/
+
+# Builds
+dist/
+**/dist/
+.angular/
+**/.angular/
+
+# Entorno / secretos
+.env
+**/.env
+!**/.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor / SO
+.DS_Store
+Thumbs.db

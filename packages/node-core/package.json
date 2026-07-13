@@ -1,0 +1,15 @@
+{
+  "name": "@fabrica/node-core",
+  "version": "2.0.0",
+  "description": "Core Assets de backend de la Fábrica: base GraphQL, JWT (CA-011), configuración BD (CA-013), auditoría (CA-012) y motor de feature toggles.",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./feature-toggles": "./src/feature-toggles.js"
+  },
+  "scripts": {
+    "test": "echo \"@fabrica/node-core: sin pruebas unitarias en este sprint\" && exit 0"
+  },
+  "keywords": ["fabrica", "core-asset", "graphql", "jwt", "auditoria"],
+  "license": "MIT"
+}

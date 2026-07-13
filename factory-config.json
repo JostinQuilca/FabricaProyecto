@@ -1,0 +1,39 @@
+{
+  "fabrica": {
+    "version": "2.0",
+    "rutas_core_assets": {
+      "frontend": "./frontend",
+      "backend": "./backend"
+    },
+    "librerias_npm": {
+      "@fabrica/design-system": "packages/design-system",
+      "@fabrica/angular-auth": "packages/angular-auth",
+      "@fabrica/node-core": "packages/node-core",
+      "@fabrica/academico": "packages/academico"
+    }
+  },
+  "configuracion_nuevo_proyecto": {
+    "nombre_default": "NuevoProyectoApp",
+    "core_assets": {
+      "CA-001_DesignSystem": true,
+      "CA-002_ModeloUsuarioFront": true,
+      "CA-003_AuthService": true,
+      "CA-004_AuthGuard": true,
+      "CA-005_RoleGuard": true,
+      "CA-006_Login": true,
+      "CA-007_RegistroAbierto": true,
+      "CA-008_Dashboard": true,
+      "CA-009_EsquemaGraphQLBase": true,
+      "CA-010_ResolversGraphQL": true,
+      "CA-011_JWTMiddleware": true,
+      "CA-012_ModeloAuditoria": true,
+      "CA-013_ConfiguracionBD": true,
+      "CA-016_ModuloMaterias": true,
+      "CA-017_ModuloInscripciones": true
+    },
+    "entorno": {
+      "db_host_template": "tu-host.render.com",
+      "puerto_backend": 4000
+    }
+  }
+}

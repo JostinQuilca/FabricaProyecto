@@ -1,0 +1,89 @@
+<div class="auth-layout">
+  <!-- Left Panel: Branding / Illustration -->
+  <div class="auth-sidebar">
+    <div class="brand">
+      <h2>Fábrica de Software</h2>
+      <p>Sistema Académico</p>
+    </div>
+    <div class="illustration">
+      <!-- Un simple placeholder visual premium -->
+      <div class="glass-panel p-6">
+        <h3>Bienvenido de nuevo</h3>
+        <p>Accede a tu plataforma académica integral para gestionar tu progreso y actividades.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel: Form -->
+  <div class="auth-content">
+    <div class="auth-card glass-panel">
+      <div class="card-header text-center mb-6">
+        <h2>Iniciar Sesión</h2>
+        <p>Ingresa tus credenciales para continuar</p>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <!-- Error General -->
+        <div *ngIf="errorMessage" class="alert alert-error mb-4">
+          {{ errorMessage }}
+        </div>
+
+        <!-- Email Field -->
+        <div class="form-group">
+          <label for="email" class="form-label">Correo Institucional</label>
+          <input 
+            type="email" 
+            id="email" 
+            class="form-control" 
+            formControlName="email"
+            [ngClass]="{'is-invalid': loginForm.get('email')?.invalid && loginForm.get('email')?.touched}"
+            placeholder="ejemplo@edu.ec"
+          >
+          <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="invalid-feedback">
+            <span *ngIf="loginForm.get('email')?.errors?.['required']">El correo es requerido.</span>
+            <span *ngIf="loginForm.get('email')?.errors?.['email']">Ingresa un correo válido.</span>
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group">
+          <div class="flex justify-between items-center mb-1">
+            <label for="password" class="form-label mb-0">Contraseña</label>
+            <a routerLink="/recuperar-password" class="text-sm text-primary hover:underline">¿Olvidaste tu contraseña?</a>
+          </div>
+          <div class="password-wrapper">
+            <input 
+              [type]="showPassword ? 'text' : 'password'" 
+              id="password" 
+              class="form-control pr-10" 
+              formControlName="password"
+              [ngClass]="{'is-invalid': loginForm.get('password')?.invalid && loginForm.get('password')?.touched}"
+              placeholder="••••••••"
+            >
+            <button type="button" class="password-toggle" (click)="togglePasswordVisibility()">
+              <span *ngIf="!showPassword">👁️</span>
+              <span *ngIf="showPassword">👁️‍🗨️</span>
+            </button>
+          </div>
+          <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="invalid-feedback">
+            Contraseña es requerida.
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-group mt-6">
+          <button type="submit" class="btn btn-primary btn-block" [disabled]="loginForm.invalid || isLoading">
+            <span *ngIf="isLoading" class="spinner mr-2"></span>
+            {{ isLoading ? 'Iniciando...' : 'Ingresar' }}
+          </button>
+        </div>
+      </form>
+
+      <div class="text-center mt-6">
+        <p class="text-sm text-secondary">
+          ¿No tienes cuenta? <a routerLink="/registro" class="text-primary hover:underline font-medium">Regístrate aquí</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

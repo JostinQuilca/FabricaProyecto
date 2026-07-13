@@ -1,0 +1,96 @@
+<div class="page-layout">
+  <header class="page-topbar">
+    <div class="brand-left">
+      <div class="logo">FA</div>
+      <h1>Materias</h1>
+    </div>
+    <a routerLink="/dashboard" class="btn btn-secondary btn-sm">← Volver al panel</a>
+  </header>
+
+  <main class="page-content">
+    <div class="page-header">
+      <div>
+        <h2>Gestión de Materias</h2>
+        <p>Catálogo de cursos del sistema académico (CA-016).</p>
+      </div>
+      <button *ngIf="puedeGestionar()" class="btn btn-primary" (click)="nuevaMateria()">+ Nueva materia</button>
+    </div>
+
+    <div class="alert-error" *ngIf="error()">{{ error() }}</div>
+
+    <!-- Formulario crear / editar -->
+    <div class="card" *ngIf="mostrarForm()">
+      <h3>{{ editandoId() ? 'Editar materia' : 'Nueva materia' }}</h3>
+      <form [formGroup]="form" (ngSubmit)="guardar()">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Código</label>
+            <input class="form-control" formControlName="codigo" placeholder="Ej: MAT-101"
+                   [class.is-invalid]="form.get('codigo')?.invalid && form.get('codigo')?.touched">
+            <span class="invalid-feedback" *ngIf="form.get('codigo')?.invalid && form.get('codigo')?.touched">
+              El código es obligatorio.
+            </span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Créditos</label>
+            <input type="number" class="form-control" formControlName="creditos" min="0" max="20"
+                   [class.is-invalid]="form.get('creditos')?.invalid && form.get('creditos')?.touched">
+            <span class="invalid-feedback" *ngIf="form.get('creditos')?.invalid && form.get('creditos')?.touched">
+              Ingresa un número de créditos válido (0–20).
+            </span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nombre</label>
+          <input class="form-control" formControlName="nombre" placeholder="Ej: Cálculo Diferencial"
+                 [class.is-invalid]="form.get('nombre')?.invalid && form.get('nombre')?.touched">
+          <span class="invalid-feedback" *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched">
+            El nombre es obligatorio.
+          </span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Descripción</label>
+          <textarea class="form-control" formControlName="descripcion" rows="2"
+                    placeholder="Descripción de la materia"></textarea>
+        </div>
+        <div class="actions-cell">
+          <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Guardar</button>
+          <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Tabla de materias -->
+    <div class="table-wrapper card" style="padding:0;">
+      <div class="empty-state" *ngIf="cargando()">Cargando materias…</div>
+      <div class="empty-state" *ngIf="!cargando() && materias().length === 0">
+        No hay materias registradas.
+      </div>
+      <table class="data-table" *ngIf="!cargando() && materias().length > 0">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>Créditos</th>
+            <th>Descripción</th>
+            <th *ngIf="puedeGestionar()">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let m of materias()">
+            <td><strong>{{ m.codigo }}</strong></td>
+            <td>{{ m.nombre }}</td>
+            <td><span class="badge creditos">{{ m.creditos }}</span></td>
+            <td>{{ m.descripcion || '—' }}</td>
+            <td *ngIf="puedeGestionar()">
+              <div class="actions-cell">
+                <button class="btn btn-secondary btn-sm" (click)="editar(m)">Editar</button>
+                <button *ngIf="esAdmin()" class="btn btn-danger btn-sm" (click)="eliminar(m)">Eliminar</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>

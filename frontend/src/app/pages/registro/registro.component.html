@@ -1,0 +1,99 @@
+<div class="auth-layout">
+  <div class="auth-sidebar">
+    <div class="brand">
+      <h2>Fábrica de Software</h2>
+      <p>Sistema Académico</p>
+    </div>
+    <div class="illustration">
+      <div class="glass-panel p-6">
+        <h3>Únete a la plataforma</h3>
+        <p>Regístrate con tu correo institucional para acceder a todas las funcionalidades del sistema académico.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-content py-8">
+    <div class="auth-card glass-panel w-full max-w-md">
+      <div class="card-header text-center mb-6">
+        <h2>Crear Cuenta</h2>
+        <p>Completa tus datos para registrarte</p>
+      </div>
+
+      <form [formGroup]="registroForm" (ngSubmit)="onSubmit()">
+        <div *ngIf="errorMessage" class="alert alert-error mb-4">{{ errorMessage }}</div>
+        <div *ngIf="successMessage" class="alert alert-success mb-4">{{ successMessage }}</div>
+
+        <div class="form-group">
+          <label for="nombre" class="form-label">Nombre Completo</label>
+          <input type="text" id="nombre" class="form-control" formControlName="nombre" [ngClass]="{'is-invalid': registroForm.get('nombre')?.invalid && registroForm.get('nombre')?.touched}" placeholder="Juan Pérez">
+          <div *ngIf="registroForm.get('nombre')?.invalid && registroForm.get('nombre')?.touched" class="invalid-feedback">
+            <span *ngIf="registroForm.get('nombre')?.errors?.['required']">El nombre es requerido.</span>
+            <span *ngIf="registroForm.get('nombre')?.errors?.['minlength']">Mínimo 3 caracteres.</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email" class="form-label">Correo Institucional (.edu.ec)</label>
+          <input type="email" id="email" class="form-control" formControlName="email" [ngClass]="{'is-invalid': registroForm.get('email')?.invalid && registroForm.get('email')?.touched}" placeholder="ejemplo@edu.ec">
+          <div *ngIf="registroForm.get('email')?.invalid && registroForm.get('email')?.touched" class="invalid-feedback">
+            <span *ngIf="registroForm.get('email')?.errors?.['required']">El correo es requerido.</span>
+            <span *ngIf="registroForm.get('email')?.errors?.['email']">Formato de correo inválido.</span>
+            <span *ngIf="registroForm.get('email')?.errors?.['notInstitutional']">Debe ser un correo institucional (.edu o .edu.ec).</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="rol" class="form-label">Rol en el sistema</label>
+          <select id="rol" class="form-control custom-select" formControlName="rol">
+            <option *ngFor="let rol of roles" [value]="rol">{{ rol }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">Contraseña</label>
+          <div class="password-wrapper">
+            <input [type]="showPassword ? 'text' : 'password'" id="password" class="form-control pr-10" formControlName="password" [ngClass]="{'is-invalid': registroForm.get('password')?.invalid && registroForm.get('password')?.touched}" placeholder="••••••••">
+            <button type="button" class="password-toggle" (click)="togglePasswordVisibility('password')">
+              <span *ngIf="!showPassword">👁️</span><span *ngIf="showPassword">👁️‍🗨️</span>
+            </button>
+          </div>
+          <div *ngIf="registroForm.get('password')?.touched" class="mt-1 text-xs text-gray-500">
+            <ul class="password-hints">
+              <li [ngClass]="{'valid': registroForm.get('password')?.value?.length >= 8}">Mínimo 8 caracteres</li>
+              <li [ngClass]="{'valid': /[A-Z]/.test(registroForm.get('password')?.value || '')}">Una mayúscula</li>
+              <li [ngClass]="{'valid': /[a-z]/.test(registroForm.get('password')?.value || '')}">Una minúscula</li>
+              <li [ngClass]="{'valid': /[0-9]/.test(registroForm.get('password')?.value || '')}">Un número</li>
+              <li [ngClass]="{'valid': /[!@#\$%\^\&*\)\(+=._-]/.test(registroForm.get('password')?.value || '')}">Un carácter especial</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
+          <div class="password-wrapper">
+            <input [type]="showConfirmPassword ? 'text' : 'password'" id="confirmPassword" class="form-control pr-10" formControlName="confirmPassword" [ngClass]="{'is-invalid': (registroForm.get('confirmPassword')?.invalid || registroForm.errors?.['passwordMismatch']) && registroForm.get('confirmPassword')?.touched}" placeholder="••••••••">
+            <button type="button" class="password-toggle" (click)="togglePasswordVisibility('confirmPassword')">
+              <span *ngIf="!showConfirmPassword">👁️</span><span *ngIf="showConfirmPassword">👁️‍🗨️</span>
+            </button>
+          </div>
+          <div *ngIf="registroForm.errors?.['passwordMismatch'] && registroForm.get('confirmPassword')?.touched" class="invalid-feedback">
+            Las contraseñas no coinciden.
+          </div>
+        </div>
+
+        <div class="form-group mt-6">
+          <button type="submit" class="btn btn-primary btn-block" [disabled]="registroForm.invalid || isLoading">
+            <span *ngIf="isLoading" class="spinner mr-2"></span>
+            {{ isLoading ? 'Registrando...' : 'Registrarse' }}
+          </button>
+        </div>
+      </form>
+
+      <div class="text-center mt-6">
+        <p class="text-sm text-secondary">
+          ¿Ya tienes cuenta? <a routerLink="/login" class="text-primary hover:underline font-medium">Inicia sesión aquí</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
