@@ -4,15 +4,13 @@
   "description": "Fábrica de Software Académico — Línea de Productos de Software (SPLE). Monorepo con Core Assets reutilizables.",
   "private": true,
   "workspaces": [
-    "packages/*",
-    "backend",
-    "frontend"
+    "packages/*"
   ],
   "scripts": {
-    "dev:backend": "npm run dev --workspace=backend",
-    "start:frontend": "npm start --workspace=frontend",
-    "build:frontend": "npm run build --workspace=frontend",
-    "db:migrate:academico": "npm run db:migrate:academico --workspace=backend",
+    "dev:backend": "cd backend && npm run dev",
+    "start:frontend": "cd frontend && npm start",
+    "build:frontend": "cd frontend && npm run build",
+    "db:migrate:academico": "cd backend && npm run db:migrate:academico",
     "fabrica:generar": "node crear_nueva_app.js"
   },
   "keywords": [

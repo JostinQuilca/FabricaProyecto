@@ -28,6 +28,7 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/database ./database
 COPY --from=builder /app/scripts ./scripts
+COPY --from=builder /app/factory-config.json ./factory-config.json
 
 # Puerto típico que expone Apollo Server / GraphQL
 EXPOSE 4000
