@@ -1,5 +1,9 @@
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
+
+// --no-install salta la instalación automática de dependencias
+const SKIP_INSTALL = process.argv.includes('--no-install');
 
 // ============================================================
 // FÁBRICA DE SOFTWARE ACADÉMICO — Generador de Productos v2
@@ -18,7 +22,8 @@ try {
 }
 
 // 2. Obtener el nombre del proyecto
-const projectName = process.argv[2] || config.configuracion_nuevo_proyecto.nombre_default;
+const nameArg = process.argv.slice(2).find(a => !a.startsWith('--'));
+const projectName = nameArg || config.configuracion_nuevo_proyecto.nombre_default;
 const targetDir = path.join(__dirname, '..', projectName);
 
 console.log(`\n🏭 FÁBRICA DE SOFTWARE — Ensamblaje de Producto Liviano: ${projectName}`);
@@ -86,7 +91,8 @@ try {
 
     const GITHUB_REPO = 'alexlunamayo2002-netizen/fabrica-software-academico';
 
-    // package.json raíz — NO usa workspaces, las libs vienen de GitHub
+    // package.json raíz — NO usa workspaces, las libs vienen de GitHub.
+    // `npm start` hace TODO: crea BD+tablas, crea admin y levanta backend+frontend.
     const rootPkg = {
         name: projectName.toLowerCase(),
         version: '1.0.0',
@@ -94,9 +100,13 @@ try {
         description: `Producto derivado de la Fábrica de Software Académico: ${projectName}`,
         scripts: {
             'install:all': 'cd backend && npm install && cd ../frontend && npm install',
+            'setup': 'node scripts/setup_db.js && node scripts/seed_admin.js',
             'dev:backend': 'cd backend && npm run dev',
             'start:frontend': 'cd frontend && npm start',
-            'db:setup': 'node scripts/setup_db.js'
+            'start': 'npm run setup && concurrently -n backend,frontend -c blue,green "cd backend && npm run dev" "cd frontend && npm start"'
+        },
+        devDependencies: {
+            'concurrently': '^9.1.0'
         }
     };
     fs.writeFileSync(path.join(targetDir, 'package.json'), JSON.stringify(rootPkg, null, 2));
@@ -357,26 +367,20 @@ Producto derivado de la **Fábrica de Software Académico** (SPLE).
 | CA-017 Inscripciones | ${inscripcionesOn ? '✅' : '❌'} |
 | CA-007 Registro | ${registroOn ? '✅' : '❌'} |
 
-## Inicio rápido (PowerShell — usa \`;\` no \`&&\`)
+## Inicio rápido — UN solo comando
 
-El \`.env\` ya viene configurado para tu BD local. Asegúrate de que PostgreSQL
-esté corriendo (si usas Docker: \`docker start fabrica-pg\`).
-
-\`\`\`powershell
-# 1. Backend: instalar (baja librerías @fabrica/* de GitHub) y arrancar
-cd backend
-npm install
-npm run dev          # crea la BD y las tablas solo (CA-018) y queda escuchando
-\`\`\`
+Las dependencias ya se instalaron al generar el producto. Solo necesitas que tu
+PostgreSQL esté corriendo (si usas Docker: \`docker start fabrica-pg\`).
 
 \`\`\`powershell
-# 2. Crear un admin y arrancar el frontend (OTRA terminal)
-cd ${projectName}
-node scripts/seed_admin.js               # admin@admin.edu / admin123
-cd frontend
-npm install
-npm start                                # http://localhost:4200
+npm start
 \`\`\`
+
+Eso hace TODO: crea la base de datos y las tablas, crea el admin y levanta
+backend + frontend a la vez.
+
+- **App:** http://localhost:4200
+- **Login:** \`admin@admin.edu\` / \`admin123\`
 
 ## Añadir un módulo después (auditoría, materias, inscripciones)
 
@@ -405,17 +409,38 @@ ${materiasOn ? '- `@fabrica/academico` — Materias + Inscripciones' : ''}
         fs.copyFileSync(addFeatureTemplatePath, path.join(scriptsDir, 'add-feature.js'));
     }
 
-    console.log(`\n🎉 ¡Producto generado exitosamente en ${targetDir}!`);
-    console.log(`📦 Librerías: se instalan desde GitHub (no copiadas)`);
-    console.log(`🗄️  BD: ejecutar 'node scripts/setup_db.js' para crear tablas`);
-    console.log(`\nSiguientes pasos:`);
-    console.log(`1. cd ../${projectName}`);
-    console.log(`2. cd backend && npm install     # baja @fabrica/* de GitHub`);
-    console.log(`3. Configura backend/.env con tus credenciales de BD`);
-    console.log(`4. node scripts/setup_db.js      # crea tablas según toggles`);
-    console.log(`5. npm run dev                   # arranca el backend`);
-    console.log(`6. cd ../frontend && npm install && npm start`);
-    console.log(`\n¡Gracias por usar la Fábrica de Software Académico!\n`);
+    // =========================================================
+    // PASO 7: Instalar dependencias automáticamente
+    // =========================================================
+    if (SKIP_INSTALL) {
+        console.log(`\n⏭️  Instalación omitida (--no-install).`);
+    } else {
+        const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+        const steps = [
+            ['raíz (concurrently)', targetDir],
+            ['backend (+ librerías @fabrica/* de GitHub)', destBackend],
+            ['frontend (Angular)', destFrontend],
+        ];
+        for (const [label, dir] of steps) {
+            console.log(`\n📥 Instalando dependencias: ${label}...`);
+            try {
+                execSync(`${npm} install --no-audit --no-fund`, { cwd: dir, stdio: 'inherit' });
+            } catch (e) {
+                console.error(`  ⚠️  Falló la instalación en ${dir}. Podrás correrla a mano con "npm install".`);
+            }
+        }
+        console.log(`\n✅ Dependencias instaladas.`);
+    }
+
+    console.log(`\n🎉 ¡Producto generado en ${targetDir}!`);
+    console.log(`${'='.repeat(60)}`);
+    console.log(`\n▶️  PARA CORRER EL PRODUCTO (solo 1 comando):`);
+    console.log(`\n   cd ../${projectName}`);
+    console.log(`   npm start`);
+    console.log(`\n   (crea la BD + tablas, crea el admin y levanta backend + frontend)`);
+    console.log(`\n   Requisito: tu PostgreSQL debe estar corriendo.`);
+    console.log(`   Login:  admin@admin.edu  /  admin123   ·   App: http://localhost:4200`);
+    console.log(`\n   Añadir un módulo después:  node scripts/add-feature.js auditoria\n`);
 
 } catch (err) {
     console.error("❌ Ocurrió un error al ensamblar el proyecto:", err);
