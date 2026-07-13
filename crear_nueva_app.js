@@ -156,7 +156,7 @@ try {
         console.log(`  ➔ ✂️  Frontend: podando [CA-007_RegistroAbierto]`);
         const registroPath = path.join(destFrontend, 'src', 'app', 'pages', 'registro');
         if (fs.existsSync(registroPath)) fs.rmSync(registroPath, { recursive: true, force: true });
-        removeFromFile(routesPath, /,\n\s*{\n\s*path: 'registro',[\s\S]*?}/g);
+        removeFromFile(routesPath, /,\r?\n\s*{\r?\n\s*path: 'registro',[\s\S]*?}/g);
     }
 
     function podarFrontendModulo(ca, opts) {
@@ -172,7 +172,7 @@ try {
         console.log(`  ➔ ✂️  Frontend: podando [CA-012_ModeloAuditoria]`);
         const auditPage = path.join(destFrontend, 'src', 'app', 'pages', 'auditoria');
         if (fs.existsSync(auditPage)) fs.rmSync(auditPage, { recursive: true, force: true });
-        removeFromFile(routesPath, /,?\n\s*\/\/ Sprint 2 · CA-012 Auditoría\n\s*{\n[\s\S]*?canActivate: \[authGuard\]\n\s*}/g);
+        removeFromFile(routesPath, /,?\r?\n\s*\/\/ Sprint 2 · CA-012 Auditoría\r?\n\s*{\r?\n[\s\S]*?canActivate: \[authGuard\]\r?\n\s*}/g);
         // Quitar el acceso rápido a auditoría del panel admin
         const adminHtml = path.join(destFrontend, 'src', 'app', 'pages', 'admin', 'admin.component.html');
         removeFromFile(adminHtml, /\s*<a routerLink="\/auditoria"[\s\S]*?<\/a>/g);
@@ -181,14 +181,14 @@ try {
         podarFrontendModulo('CA-017_ModuloInscripciones', {
             page: 'inscripciones',
             service: 'inscripcion.service.ts',
-            routeRegex: /,\n\s*\/\/ Sprint 2 · CA-017 Inscripciones\n\s*{\n[\s\S]*?canActivate: \[authGuard\]\n\s*}/g
+            routeRegex: /,\r?\n\s*\/\/ Sprint 2 · CA-017 Inscripciones\r?\n\s*{\r?\n[\s\S]*?canActivate: \[authGuard\]\r?\n\s*}/g
         });
     }
     if (!materiasOn) {
         podarFrontendModulo('CA-016_ModuloMaterias', {
             page: 'materias',
             service: 'materia.service.ts',
-            routeRegex: /,\n\s*\/\/ Sprint 2 · CA-016 Materias\n\s*{\n[\s\S]*?canActivate: \[authGuard\]\n\s*}/g
+            routeRegex: /,\r?\n\s*\/\/ Sprint 2 · CA-016 Materias\r?\n\s*{\r?\n[\s\S]*?canActivate: \[authGuard\]\r?\n\s*}/g
         });
     }
 
@@ -346,7 +346,7 @@ async function setup() {
         );
         console.log('\\n📊 Tablas creadas en la BD:');
         tables.rows.forEach(r => console.log('   • ' + r.tablename));
-        console.log('\\n🎉 ¡Setup de BD completado para ' + projectName + '!');
+        console.log('\\n🎉 ¡Setup de BD completado para ${projectName}!');
 
     } catch (error) {
         console.error('❌ Error en setup de BD:', error.message);
