@@ -46,12 +46,5 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard],
     data: { roles: ['ADMIN'] }
   },
-  // Instalador GUI de Core Assets (exclusivo ADMIN)
-  {
-    path: 'fabrica',
-    loadComponent: () => import('./pages/fabrica/fabrica.component').then(c => c.FabricaComponent),
-    canActivate: [authGuard, roleGuard],
-    data: { roles: ['ADMIN'] }
-  },
   { path: '**', redirectTo: 'login' }
 ];

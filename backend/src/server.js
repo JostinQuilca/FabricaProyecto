@@ -3,9 +3,7 @@
 // Todo el código vive en las librerías @fabrica/*; este archivo
 // solo ENSAMBLA los Core Assets activos según los feature toggles.
 // ============================================================
-const path = require('path');
-const fs = require('fs');
-const { execSync } = require('child_process');
+const net = require('net');
 const { ApolloServer } = require('@apollo/server');
 const { startStandaloneServer } = require('@apollo/server/standalone');
 const {
@@ -15,74 +13,39 @@ const {
   createUsuarioModel, createRoleModel, baseTypeDefs, buildBaseResolvers,
   createAuditoriaModule, noopAuditoria,
   composeModules, crearFeatureToggles,
-  installAsset, catalogoConEstado, cargarConfig,
 } = require('@fabrica/node-core');
 require('dotenv').config();
 
-// Raíz del producto: una carpeta arriba de backend/ (donde vive factory-config.json)
-const PRODUCT_ROOT = path.join(__dirname, '..', '..');
-
-// SDL + resolvers del instalador de Core Assets (GUI): permite activar un
-// asset opcional (auditoría, materias, inscripciones) desde la app sin
-// tocar la terminal. Requiere rol ADMIN.
-const installerTypeDefs = `#graphql
-  type CoreAssetInfo {
-    id: String!
-    nombre: String!
-    descripcion: String!
-    activo: Boolean!
-  }
-  type InstalacionResultado {
-    ok: Boolean!
-    mensaje: String!
-    instalados: [String!]!
-  }
-  extend type Query {
-    catalogoCoreAssets: [CoreAssetInfo!]!
-  }
-  extend type Mutation {
-    instalarCoreAsset(assetId: String!): InstalacionResultado!
-  }
-`;
-
-function buildInstallerResolvers({ client }) {
-  return {
-    Query: {
-      catalogoCoreAssets: (_, __, ctx) => {
-        if (!ctx.user || Number(ctx.user.rol_id) !== 1) throw new Error('No autorizado: se requiere rol ADMIN');
-        return catalogoConEstado(cargarConfig(PRODUCT_ROOT));
-      },
-    },
-    Mutation: {
-      instalarCoreAsset: async (_, { assetId }, ctx) => {
-        if (!ctx.user || Number(ctx.user.rol_id) !== 1) throw new Error('No autorizado: se requiere rol ADMIN');
-
-        const resultado = await installAsset({ productRoot: PRODUCT_ROOT, assetId });
-
-        if (resultado.needsNpmInstall) {
-          execSync('npm install --no-audit --no-fund', { cwd: path.join(PRODUCT_ROOT, 'backend'), stdio: 'inherit' });
+/**
+ * Espera a que un puerto quede libre, haciendo un bind de prueba con `net`.
+ * El instalador GUI reinicia este proceso (nodemon detecta un touch al
+ * archivo); en Windows el socket anterior a veces tarda unos ms en
+ * liberarse. Apollo's startStandaloneServer emite el EADDRINUSE como un
+ * evento 'error' no capturable con try/catch normal, así que se verifica
+ * el puerto ANTES de arrancar el servidor real, en vez de reintentar Apollo.
+ */
+function waitForPortFree(port, maxIntentos = 20, esperaMs = 500) {
+  return new Promise((resolve, reject) => {
+    let intento = 0;
+    const probar = () => {
+      intento++;
+      const tester = net.createServer();
+      tester.once('error', (err) => {
+        tester.close();
+        if (err.code === 'EADDRINUSE' && intento < maxIntentos) {
+          console.log(`  ⏳ Puerto ${port} aún ocupado (reintento ${intento}/${maxIntentos})...`);
+          setTimeout(probar, esperaMs);
+        } else {
+          reject(err);
         }
-
-        // Crear las tablas de lo que se acaba de instalar (orden: materias antes que inscripciones)
-        if (resultado.instalados.includes('auditoria')) {
-          await ensureAuditoriaTable(client);
-        }
-        if (resultado.instalados.includes('materias') || resultado.instalados.includes('inscripciones')) {
-          const academico = require('@fabrica/academico');
-          if (resultado.instalados.includes('materias')) await academico.ensureMateriasTable(client);
-          if (resultado.instalados.includes('inscripciones')) await academico.ensureInscripcionesTable(client);
-        }
-
-        // Reiniciar el backend para que cargue el módulo recién activado:
-        // se "toca" este mismo archivo y nodemon detecta el cambio y reinicia.
-        setTimeout(() => {
-          fs.utimesSync(__filename, new Date(), new Date());
-        }, 300);
-
-        return resultado;
-      },
-    },
-  };
+      });
+      tester.once('listening', () => {
+        tester.close(() => resolve());
+      });
+      tester.listen(port);
+    };
+    probar();
+  });
 }
 
 async function startServer() {
@@ -122,7 +85,6 @@ async function startServer() {
       typeDefs: `extend type Query { coreAssetsActivos: [String!]! }`,
       resolvers: { Query: { coreAssetsActivos: () => features.enabledAssets() } },
     },
-    { typeDefs: installerTypeDefs, resolvers: buildInstallerResolvers({ client }) },
   ];
   if (auditoriaOn) modules.push(auditoriaModule);
 
@@ -139,8 +101,11 @@ async function startServer() {
   const { typeDefs, resolvers } = composeModules(modules);
   const server = new ApolloServer({ typeDefs, resolvers });
 
+  const port = process.env.PORT || 4000;
+  await waitForPortFree(Number(port));
+
   const { url } = await startStandaloneServer(server, {
-    listen: { port: process.env.PORT || 4000 },
+    listen: { port },
     context: async ({ req }) => ({ user: verifyToken(req.headers.authorization || ''), req }),
   });
 

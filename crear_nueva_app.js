@@ -60,6 +60,20 @@ try {
         process.exit(1);
     }
 
+    // Override de assets opcionales desde la Consola de la Fábrica (GUI).
+    // Se pasa por env FABRICA_OPCIONALES (JSON: {"CA-012_...": true, ...})
+    // para elegir qué llevar SIN mutar el factory-config.json del repo.
+    if (process.env.FABRICA_OPCIONALES) {
+        try {
+            const override = JSON.parse(process.env.FABRICA_OPCIONALES);
+            const ca = config.configuracion_nuevo_proyecto.core_assets;
+            if (ca.opcionales) Object.assign(ca.opcionales, override);
+            else Object.assign(ca, override);
+        } catch (e) {
+            console.error('⚠️  FABRICA_OPCIONALES no es JSON válido, se ignora:', e.message);
+        }
+    }
+
     // core_assets soporta formato anidado {obligatorios, opcionales} o plano (legacy)
     const rawAssets = config.configuracion_nuevo_proyecto.core_assets || {};
     const assets = (rawAssets.obligatorios || rawAssets.opcionales)
@@ -82,6 +96,14 @@ try {
     // Copiar backend y frontend (código del producto, SIN librerías)
     copyRecursiveSync(path.join(__dirname, 'backend'), destBackend);
     copyRecursiveSync(path.join(__dirname, 'frontend'), destFrontend);
+    // El backend de referencia del propio repo lleva su factory-config.json
+    // (necesario solo para el contexto de build de SU Dockerfile). En un
+    // producto derivado esa copia queda obsoleta y, peor, cargarConfig()
+    // la encuentra ANTES que la del producto (busca hacia arriba desde
+    // backend/), leyendo toggles incorrectos. Se elimina siempre aquí; el
+    // paso 5 escribe la config correcta en la raíz del producto.
+    const staleBackendConfig = path.join(destBackend, 'factory-config.json');
+    if (fs.existsSync(staleBackendConfig)) fs.unlinkSync(staleBackendConfig);
     console.log(`  ✅ Backend y frontend copiados (sin librerías @fabrica/*)`);
 
     // =========================================================
@@ -309,6 +331,14 @@ PORT=${entorno.puerto_backend}
 DB_SSL=true
 `;
     fs.writeFileSync(path.join(destBackend, '.env'), envContent);
+
+    // Sincronizar el environment.ts del frontend con el puerto del backend,
+    // para que el producto quede consistente sin importar el valor que tenga
+    // la copia de referencia de la fábrica.
+    const envTsPath = path.join(destFrontend, 'src', 'environments', 'environment.ts');
+    if (fs.existsSync(envTsPath)) {
+        removeFromFile(envTsPath, /apiUrl:\s*'http:\/\/localhost:\d+'/g, `apiUrl: 'http://localhost:${entorno.puerto_backend}'`);
+    }
 
     // seed_admin.js — crea un usuario ADMIN listo para iniciar sesión.
     const seedAdminScript = `// ============================================================
