@@ -2,8 +2,6 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { GraphqlService } from '../../services/graphql.service';
-import { MateriaService } from '../../services/materia.service';
-import { InscripcionService } from '../../services/inscripcion.service';
 import { AuthService } from '../../services/auth.service';
 import { FeaturesService } from '../../services/features.service';
 
@@ -15,6 +13,10 @@ interface UsuarioAdmin {
 }
 
 // HU-S2.5 · Panel de Administración Académico (exclusivo rol ADMIN)
+// El panel es una COMMONALITY (siempre presente), así que NO importa
+// estáticamente los servicios de assets opcionales (materia/inscripcion):
+// esos archivos se podan del producto si el asset no está incluido. En su
+// lugar consulta los contadores por GraphQL directo, guardado por toggle.
 @Component({
   selector: 'app-admin',
   standalone: true,
@@ -24,8 +26,6 @@ interface UsuarioAdmin {
 })
 export class AdminComponent implements OnInit {
   private gql = inject(GraphqlService);
-  private materiaService = inject(MateriaService);
-  private inscripcionService = inject(InscripcionService);
   private authService = inject(AuthService);
   private featuresService = inject(FeaturesService);
 
@@ -36,23 +36,28 @@ export class AdminComponent implements OnInit {
 
   adminNombre = () => this.authService.currentUser()?.nombre ?? 'Administrador';
 
-  // Los módulos solo se consultan/muestran si el Core Asset está activo
-  // en este producto (evita queries a campos GraphQL que no existen).
   hasMaterias(): boolean { return this.featuresService.isEnabled('CA-016_ModuloMaterias'); }
   hasInscripciones(): boolean { return this.featuresService.isEnabled('CA-017_ModuloInscripciones'); }
   hasAuditoria(): boolean { return this.featuresService.isEnabled('CA-012_ModeloAuditoria'); }
 
   ngOnInit() {
     this.featuresService.cargar();
+
     this.gql.request<{ usuarios: UsuarioAdmin[] }>(`query { usuarios { id nombre email rol { nombre } } }`)
       .subscribe({
         next: d => this.usuarios.set(d.usuarios),
         error: err => this.error.set(err.message)
       });
-    // Se intenta siempre; si el módulo no está activo el backend no expone
-    // el campo y la petición falla en silencio (el contador queda en 0).
-    this.materiaService.listar().subscribe({ next: m => this.totalMaterias.set(m.length), error: () => {} });
-    this.inscripcionService.listar().subscribe({ next: i => this.totalInscripciones.set(i.length), error: () => {} });
+
+    // Contadores de módulos opcionales: se consultan por GraphQL directo.
+    // Si el módulo no está activo, el backend no expone el campo y la
+    // petición falla en silencio (el contador queda en 0). No hay import
+    // estático de sus servicios, así que el panel compila aunque el asset
+    // haya sido podado del producto.
+    this.gql.request<{ materias: { id: string }[] }>(`query { materias { id } }`)
+      .subscribe({ next: d => this.totalMaterias.set(d.materias.length), error: () => {} });
+    this.gql.request<{ inscripciones: { id: string }[] }>(`query { inscripciones { id } }`)
+      .subscribe({ next: d => this.totalInscripciones.set(d.inscripciones.length), error: () => {} });
   }
 
   contarPorRol(rol: string): number {
