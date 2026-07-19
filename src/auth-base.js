@@ -19,6 +19,21 @@ function createUsuarioModel(client) {
         'INSERT INTO usuarios (nombre, email, password, rol_id) VALUES ($1, $2, $3, $4) RETURNING *',
         [nombre, email, password, rol_id]
       )).rows[0],
+    // Usados por CA-020 (Gestión de Usuarios). El password es opcional:
+    // si no se envía, se conserva el actual.
+    update: async (id, { nombre, email, rol_id, password }) =>
+      (await client.query(
+        `UPDATE usuarios
+         SET nombre = COALESCE($2, nombre),
+             email = COALESCE($3, email),
+             rol_id = COALESCE($4, rol_id),
+             password = COALESCE($5, password),
+             updated_at = NOW()
+         WHERE id = $1 RETURNING *`,
+        [id, nombre, email, rol_id, password]
+      )).rows[0] || null,
+    remove: async (id) =>
+      (await client.query('DELETE FROM usuarios WHERE id = $1 RETURNING *', [id])).rows[0] || null,
   };
 }
 
