@@ -90,13 +90,26 @@ async function startServer() {
   if (auditoriaOn) modules.push(auditoriaModule);
 
   if (features.isEnabled('CA-016_ModuloMaterias')) {
-    const { createAcademicoModule, ensureMateriasTable, ensureInscripcionesTable } = require('@fabrica/academico');
-    modules.push(createAcademicoModule({ client, usuarioModel: Usuario, auditoria }));
+    const {
+      createAcademicoModule, createCalificacionesModule,
+      ensureMateriasTable, ensureInscripcionesTable, ensureCalificacionesTable,
+    } = require('@fabrica/academico');
+    const academicoModule = createAcademicoModule({ client, usuarioModel: Usuario, auditoria });
+    modules.push(academicoModule);
     if (autoSetup) {
       await ensureMateriasTable(client);
       if (features.isEnabled('CA-017_ModuloInscripciones')) await ensureInscripcionesTable(client);
     }
     console.log('  ✓ @fabrica/academico (CA-016/CA-017) cargado');
+
+    // CA-019 · Calificaciones (requiere CA-016; usa el modelo Materia del módulo académico)
+    if (features.isEnabled('CA-019_ModuloCalificaciones')) {
+      modules.push(createCalificacionesModule({
+        client, materiaModel: academicoModule.models.Materia, usuarioModel: Usuario, auditoria,
+      }));
+      if (autoSetup) await ensureCalificacionesTable(client);
+      console.log('  ✓ CA-019 Calificaciones cargado');
+    }
   }
 
   const { typeDefs, resolvers } = composeModules(modules);

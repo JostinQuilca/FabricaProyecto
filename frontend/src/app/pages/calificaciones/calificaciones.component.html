@@ -1,0 +1,91 @@
+<div class="page-layout">
+  <header class="page-topbar">
+    <div class="brand-left">
+      <div class="logo">FA</div>
+      <h1>Calificaciones</h1>
+    </div>
+    <a routerLink="/dashboard" class="btn btn-secondary btn-sm">← Volver al panel</a>
+  </header>
+
+  <main class="page-content">
+    <div class="page-header">
+      <div>
+        <h2>Gestión de Calificaciones</h2>
+        <p>Registro de notas de estudiantes por materia (CA-019).</p>
+      </div>
+    </div>
+
+    <div class="alert-error" *ngIf="error()">{{ error() }}</div>
+    <div class="alert-error" *ngIf="ok()" style="background:#f0fdf4;border-color:#bbf7d0;color:#15803d;">{{ ok() }}</div>
+
+    <!-- Formulario de registro -->
+    <div class="card" *ngIf="puedeGestionar()">
+      <h3>Registrar calificación</h3>
+      <form [formGroup]="form" (ngSubmit)="registrar()">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Estudiante</label>
+            <select class="form-control" formControlName="estudianteId">
+              <option value="">— Selecciona —</option>
+              <option *ngFor="let e of estudiantes()" [value]="e.id">{{ e.nombre }} ({{ e.email }})</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Materia</label>
+            <select class="form-control" formControlName="materiaId">
+              <option value="">— Selecciona —</option>
+              <option *ngFor="let m of materias()" [value]="m.id">{{ m.codigo }} · {{ m.nombre }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Nota (0–100)</label>
+            <input type="number" class="form-control" formControlName="nota" min="0" max="100" step="0.01">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Período</label>
+            <input class="form-control" formControlName="periodo" placeholder="Ej: 2026-1">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Observación (opcional)</label>
+          <input class="form-control" formControlName="observacion" placeholder="Comentario">
+        </div>
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Registrar</button>
+      </form>
+    </div>
+
+    <!-- Tabla -->
+    <div class="table-wrapper card" style="padding:0;">
+      <div class="empty-state" *ngIf="cargando()">Cargando calificaciones…</div>
+      <div class="empty-state" *ngIf="!cargando() && calificaciones().length === 0">
+        No hay calificaciones registradas.
+      </div>
+      <table class="data-table" *ngIf="!cargando() && calificaciones().length > 0">
+        <thead>
+          <tr>
+            <th>Estudiante</th>
+            <th>Materia</th>
+            <th>Nota</th>
+            <th>Período</th>
+            <th>Observación</th>
+            <th *ngIf="esAdmin()">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of calificaciones()">
+            <td><strong>{{ c.estudiante.nombre }}</strong></td>
+            <td>{{ c.materia.codigo }} · {{ c.materia.nombre }}</td>
+            <td><span class="badge" [class.activa]="c.nota >= 60" [style.background]="c.nota < 60 ? '#fef2f2' : null" [style.color]="c.nota < 60 ? '#dc2626' : null">{{ c.nota }}</span></td>
+            <td>{{ c.periodo }}</td>
+            <td>{{ c.observacion || '—' }}</td>
+            <td *ngIf="esAdmin()">
+              <button class="btn btn-danger btn-sm" (click)="eliminar(c)">Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>

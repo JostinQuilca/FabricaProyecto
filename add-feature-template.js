@@ -47,10 +47,11 @@ async function main() {
     if (resultado.instalados.includes('auditoria')) {
       await ensureAuditoriaTable(client);
     }
-    if (resultado.instalados.includes('materias') || resultado.instalados.includes('inscripciones')) {
+    if (resultado.instalados.some(a => ['materias', 'inscripciones', 'calificaciones'].includes(a))) {
       const academico = require('@fabrica/academico');
       if (resultado.instalados.includes('materias')) await academico.ensureMateriasTable(client);
       if (resultado.instalados.includes('inscripciones')) await academico.ensureInscripcionesTable(client);
+      if (resultado.instalados.includes('calificaciones')) await academico.ensureCalificacionesTable(client);
     }
   } finally {
     await client.end();

@@ -33,7 +33,8 @@
         "CA-007_RegistroAbierto": true,
         "CA-012_ModeloAuditoria": true,
         "CA-016_ModuloMaterias": true,
-        "CA-017_ModuloInscripciones": true
+        "CA-017_ModuloInscripciones": true,
+        "CA-019_ModuloCalificaciones": true
       }
     },
     "entorno": {

@@ -1,12 +1,13 @@
 // ============================================================
 // @fabrica/academico · Módulo componible del dominio académico
-//   CA-016 Materias  ·  CA-017 Inscripciones
+//   CA-016 Materias  ·  CA-017 Inscripciones  ·  CA-019 Calificaciones
 // ============================================================
 const { createMateriaModel } = require('./materia.model');
 const { createInscripcionModel } = require('./inscripcion.model');
 const { academicoTypeDefs } = require('./typeDefs');
 const { buildAcademicoResolvers } = require('./resolvers');
-const { ensureMateriasTable, ensureInscripcionesTable } = require('./db-schema');
+const { ensureMateriasTable, ensureInscripcionesTable, ensureCalificacionesTable } = require('./db-schema');
+const { createCalificacionesModule } = require('./calificaciones.module');
 
 /**
  * Crea el módulo académico listo para componer con el esquema base.
@@ -27,4 +28,10 @@ function createAcademicoModule({ client, usuarioModel, auditoria }) {
   };
 }
 
-module.exports = { createAcademicoModule, ensureMateriasTable, ensureInscripcionesTable };
+module.exports = {
+  createAcademicoModule,
+  createCalificacionesModule,
+  ensureMateriasTable,
+  ensureInscripcionesTable,
+  ensureCalificacionesTable,
+};

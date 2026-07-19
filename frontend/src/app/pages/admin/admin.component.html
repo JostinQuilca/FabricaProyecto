@@ -50,6 +50,10 @@
         <div class="value">📝</div>
         <div class="label">Gestionar inscripciones</div>
       </a>
+      <a *ngIf="hasCalificaciones()" routerLink="/calificaciones" class="stat-card" style="text-decoration:none;">
+        <div class="value">🎯</div>
+        <div class="label">Gestionar calificaciones</div>
+      </a>
       <a *ngIf="hasAuditoria()" routerLink="/auditoria" class="stat-card" style="text-decoration:none;">
         <div class="value">🔍</div>
         <div class="label">Registro de auditoría</div>

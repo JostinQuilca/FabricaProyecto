@@ -39,6 +39,7 @@ export class AdminComponent implements OnInit {
   hasMaterias(): boolean { return this.featuresService.isEnabled('CA-016_ModuloMaterias'); }
   hasInscripciones(): boolean { return this.featuresService.isEnabled('CA-017_ModuloInscripciones'); }
   hasAuditoria(): boolean { return this.featuresService.isEnabled('CA-012_ModeloAuditoria'); }
+  hasCalificaciones(): boolean { return this.featuresService.isEnabled('CA-019_ModuloCalificaciones'); }
 
   ngOnInit() {
     this.featuresService.cargar();

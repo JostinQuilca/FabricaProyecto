@@ -57,4 +57,24 @@ async function ensureInscripcionesTable(client) {
   console.log('  ✅ CA-017: tabla inscripciones verificada');
 }
 
-module.exports = { ensureMateriasTable, ensureInscripcionesTable };
+/** DDL del CA-019 (Calificaciones). Requiere materias y usuarios (FK). Idempotente. */
+async function ensureCalificacionesTable(client) {
+  await client.query(`
+    CREATE TABLE IF NOT EXISTS calificaciones (
+        id SERIAL PRIMARY KEY,
+        estudiante_id INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+        materia_id INTEGER NOT NULL REFERENCES materias(id) ON DELETE CASCADE,
+        nota NUMERIC(5,2) NOT NULL CHECK (nota >= 0 AND nota <= 100),
+        periodo VARCHAR(20) NOT NULL,
+        observacion TEXT,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW(),
+        UNIQUE (estudiante_id, materia_id, periodo)
+    );
+    CREATE INDEX IF NOT EXISTS idx_calificaciones_estudiante ON calificaciones(estudiante_id);
+    CREATE INDEX IF NOT EXISTS idx_calificaciones_materia ON calificaciones(materia_id);
+  `);
+  console.log('  ✅ CA-019: tabla calificaciones verificada');
+}
+
+module.exports = { ensureMateriasTable, ensureInscripcionesTable, ensureCalificacionesTable };

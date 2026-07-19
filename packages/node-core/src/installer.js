@@ -70,6 +70,26 @@ const FEATURES_CATALOG = {
       importPath: './pages/inscripciones/inscripciones.component'
     },
     adminCard: { icon: '📝', label: 'Gestionar inscripciones', link: '/inscripciones' }
+  },
+  calificaciones: {
+    id: 'calificaciones',
+    configKey: 'CA-019_ModuloCalificaciones',
+    nombre: 'Calificaciones',
+    descripcion: 'Registro de notas de estudiantes por materia.',
+    backendDep: '@fabrica/academico',
+    frontendDirs: ['frontend/src/app/pages/calificaciones'],
+    frontendFiles: [
+      'frontend/src/app/services/calificacion.service.ts',
+      'frontend/src/app/models/calificacion.model.ts'
+    ],
+    dependsOn: ['materias'],
+    route: {
+      comment: '// Sprint 2 · CA-019 Calificaciones',
+      path: 'calificaciones',
+      componentName: 'CalificacionesComponent',
+      importPath: './pages/calificaciones/calificaciones.component'
+    },
+    adminCard: { icon: '🎯', label: 'Gestionar calificaciones', link: '/calificaciones' }
   }
 };
 

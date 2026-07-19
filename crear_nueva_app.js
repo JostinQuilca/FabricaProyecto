@@ -81,6 +81,7 @@ try {
       : rawAssets;
     const materiasOn = assets['CA-016_ModuloMaterias'] !== false;
     const inscripcionesOn = materiasOn && assets['CA-017_ModuloInscripciones'] !== false;
+    const calificacionesOn = materiasOn && assets['CA-019_ModuloCalificaciones'] !== false;
     const auditoriaOn = assets['CA-012_ModeloAuditoria'] !== false;
     const registroOn = assets['CA-007_RegistroAbierto'] !== false;
 
@@ -183,6 +184,7 @@ try {
     console.log(`  Backend · CA-012 Auditoría:     ${estado(auditoriaOn)}`);
     console.log(`  Backend · CA-016 Materias:      ${estado(materiasOn)}`);
     console.log(`  Backend · CA-017 Inscripciones: ${estado(inscripcionesOn)}`);
+    console.log(`  Backend · CA-019 Calificaciones:${estado(calificacionesOn)}`);
     console.log(`  Frontend · CA-007 Registro:     ${estado(registroOn)}`);
 
     // --- FRONTEND: poda estática ---
@@ -212,6 +214,13 @@ try {
         // Quitar el acceso rápido a auditoría del panel admin
         const adminHtml = path.join(destFrontend, 'src', 'app', 'pages', 'admin', 'admin.component.html');
         removeFromFile(adminHtml, /\s*<a routerLink="\/auditoria"[\s\S]*?<\/a>/g);
+    }
+    if (!calificacionesOn) {
+        podarFrontendModulo('CA-019_ModuloCalificaciones', {
+            page: 'calificaciones',
+            service: 'calificacion.service.ts',
+            routeRegex: /,\r?\n\s*\/\/ Sprint 2 · CA-019 Calificaciones\r?\n\s*{\r?\n[\s\S]*?canActivate: \[authGuard\]\r?\n\s*}/g
+        });
     }
     if (!inscripcionesOn) {
         podarFrontendModulo('CA-017_ModuloInscripciones', {
