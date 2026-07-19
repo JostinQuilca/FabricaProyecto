@@ -58,7 +58,8 @@ jobs:
       - name: Build imagen Docker (Local)
         uses: docker/build-push-action@v5
         with:
-          context: ./backend
+          context: .
+          file: ./backend/Dockerfile
           load: true # Carga la imagen localmente en el runner para la auditoría de Trivy
           tags: ghcr.io/${{ github.repository }}:test
 
@@ -75,7 +76,8 @@ jobs:
       - name: Build and Push a GHCR
         uses: docker/build-push-action@v5
         with:
-          context: ./backend
+          context: .
+          file: ./backend/Dockerfile
           push: true
           tags: |
             ghcr.io/${{ github.repository }}:latest

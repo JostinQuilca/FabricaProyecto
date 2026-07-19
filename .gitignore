@@ -20,3 +20,4 @@ npm-debug.log*
 # Editor / SO
 .DS_Store
 Thumbs.db
+backend/package-lock.json

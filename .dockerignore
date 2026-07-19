@@ -1,0 +1,13 @@
+# Contexto de build de la imagen del backend (context = raíz del repo)
+node_modules
+**/node_modules
+.git
+.github
+frontend
+packages/*/node_modules
+dist
+**/dist
+.angular
+**/.env
+*.log
+docs
