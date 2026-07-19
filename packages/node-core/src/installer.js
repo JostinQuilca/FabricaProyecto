@@ -9,8 +9,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const REPO_OWNER = 'alexlunamayo2002-netizen';
-const REPO_NAME = 'fabrica-software-academico';
+const REPO_OWNER = 'JostinQuilca';
+const REPO_NAME = 'FabricaProyecto';
 const BRANCH = 'main';
 
 /** Catálogo de Core Assets opcionales instalables después de generar el producto. */

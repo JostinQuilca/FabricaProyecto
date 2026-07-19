@@ -5,7 +5,7 @@
       "frontend": "./frontend",
       "backend": "./backend"
     },
-    "repositorio_librerias": "github:alexlunamayo2002-netizen/fabrica-software-academico",
+    "repositorio_librerias": "github:JostinQuilca/FabricaProyecto",
     "ramas_librerias": {
       "@fabrica/node-core": "pkg/node-core",
       "@fabrica/academico": "pkg/academico"
@@ -26,19 +26,20 @@
         "CA-009_EsquemaGraphQLBase": true,
         "CA-010_ResolversGraphQL": true,
         "CA-011_JWTMiddleware": true,
-        "CA-013_ConfiguracionBD": true
+        "CA-013_ConfiguracionBD": true,
+        "CA-018_SetupBD_Automatico": true
       },
       "opcionales": {
         "CA-007_RegistroAbierto": true,
         "CA-012_ModeloAuditoria": true,
         "CA-016_ModuloMaterias": true,
         "CA-017_ModuloInscripciones": true,
-        "CA-018_SetupBD_Automatico": true
+        "CA-019_ModuloCalificaciones": true
       }
     },
     "entorno": {
       "db_host_template": "tu-host.render.com",
-      "puerto_backend": 4000,
+      "puerto_backend": 4300,
       "db_local": {
         "host": "localhost",
         "port": 5544,

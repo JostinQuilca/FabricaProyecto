@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@apollo/server": "^4.11.0",
-    "@fabrica/node-core": "github:alexlunamayo2002-netizen/fabrica-software-academico#pkg/node-core",
-    "@fabrica/academico": "github:alexlunamayo2002-netizen/fabrica-software-academico#pkg/academico",
+    "@fabrica/academico": "github:JostinQuilca/FabricaProyecto#pkg/academico",
+    "@fabrica/node-core": "github:JostinQuilca/FabricaProyecto#pkg/node-core",
     "bcryptjs": "^3.0.3",
     "dotenv": "^16.4.5",
     "graphql": "^16.9.0",

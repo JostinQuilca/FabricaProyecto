@@ -4,11 +4,16 @@
 FROM node:18-alpine AS builder
 WORKDIR /app
 
-# Copiar archivos de dependencias
-COPY package*.json ./
+# Copiar el manifiesto de dependencias
+COPY package.json ./
 
-# Instalación limpia de paquetes de Node
-RUN npm ci
+# git es necesario para resolver las librerías @fabrica/* alojadas en
+# ramas de GitHub (github:JostinQuilca/FabricaProyecto#pkg/*)
+RUN apk add --no-cache git
+
+# Instalación de paquetes (install, no ci: trae la última versión de las
+# ramas pkg/* de las librerías, que se actualizan)
+RUN npm install --no-audit --no-fund
 
 # Copiar el código fuente del backend
 COPY . .

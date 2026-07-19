@@ -112,7 +112,7 @@ try {
     // =========================================================
     console.log(`\n📦 2. Configurando dependencias desde GitHub...`);
 
-    const GITHUB_REPO = 'alexlunamayo2002-netizen/fabrica-software-academico';
+    const GITHUB_REPO = 'JostinQuilca/FabricaProyecto';
 
     // package.json raíz — NO usa workspaces, las libs vienen de GitHub.
     // `npm start` hace TODO: crea BD+tablas, crea admin y levanta backend+frontend.

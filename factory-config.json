@@ -5,7 +5,7 @@
       "frontend": "./frontend",
       "backend": "./backend"
     },
-    "repositorio_librerias": "github:alexlunamayo2002-netizen/fabrica-software-academico",
+    "repositorio_librerias": "github:JostinQuilca/FabricaProyecto",
     "ramas_librerias": {
       "@fabrica/node-core": "pkg/node-core",
       "@fabrica/academico": "pkg/academico"

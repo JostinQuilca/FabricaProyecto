@@ -24,11 +24,14 @@ jobs:
         with:
           node-version: '18'
 
-      # [PASO 2] Instalación limpia de dependencias del Backend
+      # [PASO 2] Instalación de dependencias del Backend
+      #   Se usa `npm install` (no `npm ci`) porque las librerías @fabrica/*
+      #   viven en ramas de git (pkg/*) que se actualizan: install trae la
+      #   última versión de la rama; ci congelaría un commit viejo del lock.
       - name: Instalar dependencias del Backend
         run: |
           cd backend
-          npm ci
+          npm install --no-audit --no-fund
 
   docker:
     name: Construcción y Push de Imagen Docker
