@@ -38,6 +38,15 @@
         "CA-020_GestionUsuarios": true
       }
     },
+    "_ayuda_tema": "CA-021: variabilidad PARAMÉTRICA (no se activa/desactiva, se configura). El generador inyecta estos valores en el styles.scss del producto.",
+    "tema": {
+      "nombreProducto": "Sistema Académico",
+      "colorPrimario": "#2563eb",
+      "colorPrimarioHover": "#1d4ed8",
+      "colorExito": "#16a34a",
+      "colorError": "#dc2626",
+      "colorFondo": "#f8fafc"
+    },
     "entorno": {
       "db_host_template": "tu-host.render.com",
       "puerto_backend": 4300,

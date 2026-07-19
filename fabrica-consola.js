@@ -39,15 +39,45 @@ const LABELS = {
   'CA-018_SetupBD_Automatico': 'Setup BD automático — crea la base y las tablas al arrancar',
 };
 
+/**
+ * Dependencias entre assets, leídas del catálogo del instalador
+ * (@fabrica/node-core) para no duplicar la información. Devuelve un mapa
+ * configKey -> [configKeys de los que depende].
+ * Ej: CA-019 (Calificaciones) depende de CA-016 (Materias).
+ */
+function leerDependencias() {
+  try {
+    const { FEATURES_CATALOG } = require('./packages/node-core/src/installer');
+    const porId = FEATURES_CATALOG;
+    const mapa = {};
+    for (const f of Object.values(porId)) {
+      mapa[f.configKey] = (f.dependsOn || [])
+        .map(id => porId[id] && porId[id].configKey)
+        .filter(Boolean);
+    }
+    return mapa;
+  } catch {
+    return {};
+  }
+}
+
 function leerCatalogo() {
   const config = JSON.parse(fs.readFileSync(path.join(ROOT, 'factory-config.json'), 'utf8'));
   const ca = config.configuracion_nuevo_proyecto.core_assets || {};
   const obligatorios = ca.obligatorios || {};
   const opcionales = ca.opcionales || {};
+  const deps = leerDependencias();
   const mapear = (obj) => Object.keys(obj).map(id => ({
-    id, label: LABELS[id] || id, activo: obj[id] === true,
+    id,
+    label: LABELS[id] || id,
+    activo: obj[id] === true,
+    dependeDe: deps[id] || [],
   }));
-  return { obligatorios: mapear(obligatorios), opcionales: mapear(opcionales) };
+  return {
+    obligatorios: mapear(obligatorios),
+    opcionales: mapear(opcionales),
+    tema: config.configuracion_nuevo_proyecto.tema || {},
+  };
 }
 
 const PAGE = `<!doctype html>
@@ -76,6 +106,10 @@ const PAGE = `<!doctype html>
   .asset .t{font-weight:600;font-size:.9rem}
   .asset .lock{margin-left:auto;font-size:.72rem;color:var(--muted);white-space:nowrap}
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+  .colores{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.75rem;margin-top:1rem}
+  .color-item{display:flex;align-items:center;gap:.5rem;border:1px solid var(--border);border-radius:9px;padding:.5rem}
+  .color-item input[type=color]{width:38px;height:32px;border:none;background:none;padding:0;cursor:pointer}
+  .color-item .cl{font-size:.8rem;font-weight:600}
   @media(max-width:640px){.grid{grid-template-columns:1fr}}
   .opts{display:flex;align-items:center;gap:.5rem;margin:.75rem 0}
   button{background:var(--primary);color:#fff;border:none;padding:.85rem 1.5rem;font-size:1rem;font-weight:600;border-radius:10px;cursor:pointer;width:100%}
@@ -108,7 +142,14 @@ const PAGE = `<!doctype html>
   </div>
 
   <div class="card">
-    <h2>3. Generar</h2>
+    <h2>3. Apariencia del producto <small style="font-weight:400;color:var(--muted)">(CA-021 · se configura, no se activa)</small></h2>
+    <label class="field" for="nombreProducto">Nombre visible de la aplicación</label>
+    <input type="text" id="nombreProducto" placeholder="Sistema Académico" autocomplete="off">
+    <div class="colores" id="colores"></div>
+  </div>
+
+  <div class="card">
+    <h2>4. Generar</h2>
     <div class="opts">
       <input type="checkbox" id="instalar" checked>
       <label for="instalar"><small>Instalar dependencias automáticamente (más lento, pero queda listo para <code>npm start</code>)</small></label>
@@ -121,15 +162,91 @@ const PAGE = `<!doctype html>
 <script>
 let CATALOGO = { obligatorios: [], opcionales: [] };
 
+// nombre corto legible de un asset (para los avisos de dependencia)
+function nombreCorto(id){
+  const a = CATALOGO.opcionales.find(x => x.id === id);
+  return a ? a.label.split('—')[0].trim() : id;
+}
+
 async function cargar(){
   const r = await fetch('/api/catalogo');
   CATALOGO = await r.json();
-  document.getElementById('opcionales').innerHTML = CATALOGO.opcionales.map(a =>
-    '<label class="asset"><input type="checkbox" value="'+a.id+'" '+(a.activo?'checked':'')+'>'+
-    '<div><div class="t">'+a.label+'</div><small>'+a.id+'</small></div></label>').join('');
+  document.getElementById('opcionales').innerHTML = CATALOGO.opcionales.map(a => {
+    const req = (a.dependeDe && a.dependeDe.length)
+      ? '<span class="lock" data-req>requiere ' + a.dependeDe.map(d => nombreCorto(d)).join(' + ') + '</span>'
+      : '';
+    return '<label class="asset" data-id="'+a.id+'"><input type="checkbox" value="'+a.id+'" '+(a.activo?'checked':'')+
+      ' onchange="alCambiar(this)">'+
+      '<div><div class="t">'+a.label+'</div><small>'+a.id+'</small></div>'+req+'</label>';
+  }).join('');
   document.getElementById('obligatorios').innerHTML = CATALOGO.obligatorios.map(a =>
     '<div class="asset locked"><input type="checkbox" checked disabled>'+
     '<div><div class="t">'+a.label+'</div></div><span class="lock">🔒 obligatorio</span></div>').join('');
+  aplicarDependencias();
+  pintarTema();
+}
+
+// CA-021 · Tema: parámetros (no toggles). Se renderizan como selectores de color.
+const CAMPOS_COLOR = [
+  ['colorPrimario', 'Primario'],
+  ['colorPrimarioHover', 'Primario (hover)'],
+  ['colorExito', 'Éxito'],
+  ['colorError', 'Error'],
+  ['colorFondo', 'Fondo'],
+];
+
+function pintarTema(){
+  const t = CATALOGO.tema || {};
+  document.getElementById('nombreProducto').value = t.nombreProducto || 'Sistema Académico';
+  document.getElementById('colores').innerHTML = CAMPOS_COLOR.map(([k, etiqueta]) =>
+    '<label class="color-item"><input type="color" id="'+k+'" value="'+(t[k] || '#2563eb')+'">'+
+    '<span class="cl">'+etiqueta+'</span></label>').join('');
+}
+
+function leerTema(){
+  const tema = { nombreProducto: document.getElementById('nombreProducto').value.trim() || 'Sistema Académico' };
+  CAMPOS_COLOR.forEach(([k]) => { tema[k] = document.getElementById(k).value; });
+  return tema;
+}
+
+function chk(id){ return document.querySelector('#opcionales input[value="'+id+'"]'); }
+
+/**
+ * Reglas de dependencia:
+ *  - Al MARCAR un asset, se marcan automáticamente sus dependencias.
+ *  - Al DESMARCAR uno, se desmarcan los que dependen de él.
+ * Luego se deshabilitan visualmente los que no tienen su dependencia activa.
+ */
+function alCambiar(input){
+  const id = input.value;
+  const info = CATALOGO.opcionales.find(a => a.id === id);
+  if(input.checked){
+    (info.dependeDe || []).forEach(d => { const c = chk(d); if(c && !c.checked) c.checked = true; });
+  } else {
+    CATALOGO.opcionales
+      .filter(a => (a.dependeDe || []).includes(id))
+      .forEach(a => { const c = chk(a.id); if(c && c.checked) c.checked = false; });
+  }
+  aplicarDependencias();
+}
+
+function aplicarDependencias(){
+  CATALOGO.opcionales.forEach(a => {
+    const c = chk(a.id);
+    if(!c) return;
+    const faltan = (a.dependeDe || []).filter(d => { const dc = chk(d); return dc && !dc.checked; });
+    const bloqueado = faltan.length > 0;
+    c.disabled = bloqueado;
+    if(bloqueado) c.checked = false;
+    const fila = c.closest('.asset');
+    fila.classList.toggle('locked', bloqueado);
+    const aviso = fila.querySelector('[data-req]');
+    if(aviso){
+      aviso.textContent = bloqueado
+        ? '🔒 requiere ' + faltan.map(d => nombreCorto(d)).join(' + ')
+        : 'requiere ' + (a.dependeDe || []).map(d => nombreCorto(d)).join(' + ');
+    }
+  });
 }
 
 async function generar(){
@@ -148,7 +265,7 @@ async function generar(){
   try{
     const res = await fetch('/api/generar', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ nombre, opcionales, instalar })
+      body: JSON.stringify({ nombre, opcionales, instalar, tema: leerTema() })
     });
     const reader = res.body.getReader();
     const dec = new TextDecoder();
@@ -190,7 +307,7 @@ const server = http.createServer((req, res) => {
       let datos;
       try { datos = JSON.parse(body); } catch { res.writeHead(400); return res.end('JSON inválido'); }
 
-      const { nombre, opcionales, instalar } = datos;
+      const { nombre, opcionales, instalar, tema } = datos;
       if (!nombre || !/^[A-Za-z0-9_-]+$/.test(nombre)) {
         res.writeHead(400); return res.end('Nombre inválido');
       }
@@ -206,7 +323,11 @@ const server = http.createServer((req, res) => {
 
       const child = spawn(process.execPath, args, {
         cwd: ROOT,
-        env: { ...process.env, FABRICA_OPCIONALES: JSON.stringify(opcionales || {}) },
+        env: {
+          ...process.env,
+          FABRICA_OPCIONALES: JSON.stringify(opcionales || {}),
+          FABRICA_TEMA: JSON.stringify(tema || {}),
+        },
       });
       child.stdout.on('data', d => res.write(d));
       child.stderr.on('data', d => res.write(d));

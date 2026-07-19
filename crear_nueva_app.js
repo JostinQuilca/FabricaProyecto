@@ -74,6 +74,18 @@ try {
         }
     }
 
+    // Override del TEMA (CA-021) desde la consola, sin mutar factory-config.json
+    if (process.env.FABRICA_TEMA) {
+        try {
+            const t = JSON.parse(process.env.FABRICA_TEMA);
+            config.configuracion_nuevo_proyecto.tema = {
+                ...(config.configuracion_nuevo_proyecto.tema || {}), ...t,
+            };
+        } catch (e) {
+            console.error('⚠️  FABRICA_TEMA no es JSON válido, se ignora:', e.message);
+        }
+    }
+
     // core_assets soporta formato anidado {obligatorios, opcionales} o plano (legacy)
     const rawAssets = config.configuracion_nuevo_proyecto.core_assets || {};
     const assets = (rawAssets.obligatorios || rawAssets.opcionales)
@@ -349,6 +361,41 @@ PORT=${entorno.puerto_backend}
 DB_SSL=true
 `;
     fs.writeFileSync(path.join(destBackend, '.env'), envContent);
+
+    // ---------------------------------------------------------
+    // CA-021 · Tema (variabilidad PARAMÉTRICA)
+    // No es un módulo que se activa/desactiva: son parámetros que se
+    // inyectan en el producto. Se reescriben las variables CSS del
+    // styles.scss y el título/nombre visible de la aplicación.
+    // ---------------------------------------------------------
+    const tema = config.configuracion_nuevo_proyecto.tema;
+    if (tema) {
+        const stylesPath = path.join(destFrontend, 'src', 'styles.scss');
+        const reemplazos = [
+            [/--primary-color:\s*#[0-9a-fA-F]{3,8};/, `--primary-color: ${tema.colorPrimario};`],
+            [/--primary-hover:\s*#[0-9a-fA-F]{3,8};/, `--primary-hover: ${tema.colorPrimarioHover};`],
+            [/--success-color:\s*#[0-9a-fA-F]{3,8};/, `--success-color: ${tema.colorExito};`],
+            [/--error-color:\s*#[0-9a-fA-F]{3,8};/, `--error-color: ${tema.colorError};`],
+            [/--bg-color:\s*#[0-9a-fA-F]{3,8};/, `--bg-color: ${tema.colorFondo};`],
+        ];
+        for (const [re, val] of reemplazos) {
+            if (val && !/undefined/.test(val)) removeFromFile(stylesPath, re, val);
+        }
+
+        // Nombre visible del producto (título del navegador y encabezados)
+        if (tema.nombreProducto) {
+            removeFromFile(path.join(destFrontend, 'src', 'index.html'),
+                /<title>[\s\S]*?<\/title>/, `<title>${tema.nombreProducto}</title>`);
+            const htmlsConTitulo = [
+                path.join(destFrontend, 'src', 'app', 'pages', 'dashboard', 'dashboard.component.html'),
+                path.join(destFrontend, 'src', 'app', 'pages', 'login', 'login.component.html'),
+            ];
+            for (const f of htmlsConTitulo) {
+                removeFromFile(f, /Sistema Académico/g, tema.nombreProducto);
+            }
+        }
+        console.log(`  🎨 CA-021 Tema aplicado: "${tema.nombreProducto}" (primario ${tema.colorPrimario})`);
+    }
 
     // Sincronizar el environment.ts del frontend con el puerto del backend,
     // para que el producto quede consistente sin importar el valor que tenga
