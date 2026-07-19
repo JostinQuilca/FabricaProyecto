@@ -11,8 +11,11 @@ const { crearFeatureToggles, cargarConfig } = require('./feature-toggles');
 const { ensureDatabase, ensureBaseTables, ensureAuditoriaTable } = require('./db-schema');
 const { createUsuarioModel, createRoleModel, baseTypeDefs, buildBaseResolvers } = require('./auth-base');
 const { FEATURES_CATALOG, installAsset, catalogoConEstado, leerAssets } = require('./installer');
+const { createUsuariosModule } = require('./usuarios.module');
 
 module.exports = {
+  // CA-020 · Gestión de Usuarios (módulo componible)
+  createUsuariosModule,
   // Instalador de Core Assets (CLI y GUI comparten esta lógica)
   FEATURES_CATALOG,
   installAsset,

@@ -71,6 +71,22 @@ const FEATURES_CATALOG = {
     },
     adminCard: { icon: '📝', label: 'Gestionar inscripciones', link: '/inscripciones' }
   },
+  usuarios: {
+    id: 'usuarios',
+    configKey: 'CA-020_GestionUsuarios',
+    nombre: 'Gestión de Usuarios',
+    descripcion: 'Alta, edición y baja de usuarios con asignación de rol (ADMIN).',
+    frontendDirs: ['frontend/src/app/pages/usuarios'],
+    frontendFiles: ['frontend/src/app/services/usuario.service.ts'],
+    dependsOn: [],
+    route: {
+      comment: '// Sprint 2 · CA-020 Gestión de Usuarios',
+      path: 'usuarios',
+      componentName: 'UsuariosComponent',
+      importPath: './pages/usuarios/usuarios.component'
+    },
+    adminCard: { icon: '👥', label: 'Gestionar usuarios', link: '/usuarios' }
+  },
   calificaciones: {
     id: 'calificaciones',
     configKey: 'CA-019_ModuloCalificaciones',

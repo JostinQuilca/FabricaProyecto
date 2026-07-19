@@ -45,6 +45,13 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/calificaciones/calificaciones.component').then(c => c.CalificacionesComponent),
     canActivate: [authGuard]
   },
+  // Sprint 2 · CA-020 Gestión de Usuarios (exclusivo ADMIN)
+  {
+    path: 'usuarios',
+    loadComponent: () => import('./pages/usuarios/usuarios.component').then(c => c.UsuariosComponent),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ADMIN'] }
+  },
   // Sprint 2 · HU-S2.5 Panel de Administración (exclusivo ADMIN)
   {
     path: 'admin',

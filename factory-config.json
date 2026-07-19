@@ -34,7 +34,8 @@
         "CA-012_ModeloAuditoria": true,
         "CA-016_ModuloMaterias": true,
         "CA-017_ModuloInscripciones": true,
-        "CA-019_ModuloCalificaciones": true
+        "CA-019_ModuloCalificaciones": true,
+        "CA-020_GestionUsuarios": true
       }
     },
     "entorno": {

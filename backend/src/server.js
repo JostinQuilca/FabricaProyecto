@@ -12,6 +12,7 @@ const {
   verifyToken,
   createUsuarioModel, createRoleModel, baseTypeDefs, buildBaseResolvers,
   createAuditoriaModule, noopAuditoria,
+  createUsuariosModule,
   composeModules, crearFeatureToggles,
 } = require('@fabrica/node-core');
 require('dotenv').config();
@@ -88,6 +89,12 @@ async function startServer() {
     },
   ];
   if (auditoriaOn) modules.push(auditoriaModule);
+
+  // CA-020 · Gestión de Usuarios (alta/edición/baja de usuarios por el ADMIN)
+  if (features.isEnabled('CA-020_GestionUsuarios')) {
+    modules.push(createUsuariosModule({ usuarioModel: Usuario, auditoria }));
+    console.log('  ✓ CA-020 Gestión de Usuarios cargado');
+  }
 
   if (features.isEnabled('CA-016_ModuloMaterias')) {
     const {

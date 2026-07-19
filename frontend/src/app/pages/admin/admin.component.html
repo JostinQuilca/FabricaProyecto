@@ -42,6 +42,10 @@
       <h3>Módulos de gestión</h3>
     </div>
     <div class="stat-grid">
+      <a *ngIf="hasGestionUsuarios()" routerLink="/usuarios" class="stat-card" style="text-decoration:none;">
+        <div class="value">👥</div>
+        <div class="label">Gestionar usuarios</div>
+      </a>
       <a *ngIf="hasMaterias()" routerLink="/materias" class="stat-card" style="text-decoration:none;">
         <div class="value">📚</div>
         <div class="label">Gestionar materias</div>

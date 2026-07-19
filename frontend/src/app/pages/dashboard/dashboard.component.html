@@ -30,6 +30,7 @@
         <!-- ADMIN MODULES -->
         <ng-container *ngIf="user?.rol === Role.ADMIN">
           <a routerLink="/admin" class="module-card">🛠️ Panel de Administración</a>
+          <a *ngIf="hasGestionUsuarios()" routerLink="/usuarios" class="module-card">👥 Gestión de Usuarios</a>
           <a *ngIf="hasMaterias()" routerLink="/materias" class="module-card">📚 Gestión de Materias</a>
           <a *ngIf="hasInscripciones()" routerLink="/inscripciones" class="module-card">📝 Gestión de Inscripciones</a>
           <a *ngIf="hasCalificaciones()" routerLink="/calificaciones" class="module-card">🎯 Calificaciones</a>

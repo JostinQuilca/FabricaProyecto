@@ -35,6 +35,7 @@ const LABELS = {
   'CA-016_ModuloMaterias': 'Materias — catálogo de cursos (CRUD)',
   'CA-017_ModuloInscripciones': 'Inscripciones — matrícula (requiere Materias)',
   'CA-019_ModuloCalificaciones': 'Calificaciones — notas por materia (requiere Materias)',
+  'CA-020_GestionUsuarios': 'Gestión de Usuarios — crear estudiantes/docentes desde el panel admin',
   'CA-018_SetupBD_Automatico': 'Setup BD automático — crea la base y las tablas al arrancar',
 };
 

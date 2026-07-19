@@ -1,0 +1,119 @@
+<div class="page-layout">
+  <header class="page-topbar">
+    <div class="brand-left">
+      <div class="logo">FA</div>
+      <h1>Usuarios</h1>
+    </div>
+    <a routerLink="/admin" class="btn btn-secondary btn-sm">← Volver al panel admin</a>
+  </header>
+
+  <main class="page-content">
+    <div class="page-header">
+      <div>
+        <h2>Gestión de Usuarios</h2>
+        <p>Crea estudiantes, docentes y administradores del sistema (CA-020).</p>
+      </div>
+      <button class="btn btn-primary" (click)="nuevo()">+ Nuevo usuario</button>
+    </div>
+
+    <div class="alert-error" *ngIf="error()">{{ error() }}</div>
+    <div class="alert-error" *ngIf="ok()" style="background:#f0fdf4;border-color:#bbf7d0;color:#15803d;">{{ ok() }}</div>
+
+    <!-- Resumen por rol -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="value">{{ usuarios().length }}</div>
+        <div class="label">Total</div>
+      </div>
+      <div class="stat-card">
+        <div class="value">{{ contarPorRol('ESTUDIANTE') }}</div>
+        <div class="label">Estudiantes</div>
+      </div>
+      <div class="stat-card">
+        <div class="value">{{ contarPorRol('DOCENTE') }}</div>
+        <div class="label">Docentes</div>
+      </div>
+      <div class="stat-card">
+        <div class="value">{{ contarPorRol('ADMIN') }}</div>
+        <div class="label">Administradores</div>
+      </div>
+    </div>
+
+    <!-- Formulario crear / editar -->
+    <div class="card" *ngIf="mostrarForm()">
+      <h3>{{ editandoId() ? 'Editar usuario' : 'Nuevo usuario' }}</h3>
+      <form [formGroup]="form" (ngSubmit)="guardar()">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Nombre completo</label>
+            <input class="form-control" formControlName="nombre" placeholder="Ej: Ana Pérez"
+                   [class.is-invalid]="form.get('nombre')?.invalid && form.get('nombre')?.touched">
+            <span class="invalid-feedback" *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched">
+              Mínimo 3 caracteres.
+            </span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Correo</label>
+            <input class="form-control" formControlName="email" placeholder="ana@uni.edu.ec"
+                   [class.is-invalid]="form.get('email')?.invalid && form.get('email')?.touched">
+            <span class="invalid-feedback" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+              Correo inválido.
+            </span>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Rol</label>
+            <select class="form-control" formControlName="rolId">
+              <option value="">— Selecciona un rol —</option>
+              <option *ngFor="let r of roles()" [value]="r.id">{{ r.nombre }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              Contraseña <small *ngIf="editandoId()">(vacío = no cambiar)</small>
+            </label>
+            <input type="password" class="form-control" formControlName="password" placeholder="mínimo 6 caracteres"
+                   [class.is-invalid]="form.get('password')?.invalid && form.get('password')?.touched">
+            <span class="invalid-feedback" *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
+              Mínimo 6 caracteres.
+            </span>
+          </div>
+        </div>
+        <div class="actions-cell">
+          <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Guardar</button>
+          <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Tabla -->
+    <div class="table-wrapper card" style="padding:0;">
+      <div class="empty-state" *ngIf="cargando()">Cargando usuarios…</div>
+      <table class="data-table" *ngIf="!cargando() && usuarios().length > 0">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Rol</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let u of usuarios()">
+            <td><strong>{{ u.nombre }}</strong></td>
+            <td>{{ u.email }}</td>
+            <td><span class="badge" [ngClass]="u.rol.nombre.toLowerCase()">{{ u.rol.nombre }}</span></td>
+            <td>
+              <div class="actions-cell">
+                <button class="btn btn-secondary btn-sm" (click)="editar(u)">Editar</button>
+                <button class="btn btn-danger btn-sm" (click)="eliminar(u)" [disabled]="u.id === miId()">Eliminar</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="empty-state" *ngIf="!cargando() && usuarios().length === 0">No hay usuarios registrados.</div>
+    </div>
+  </main>
+</div>
