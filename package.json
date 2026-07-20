@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "keywords": ["fabrica", "core-asset", "materias", "inscripciones", "academico"],
   "dependencies": {
-    "@fabrica/node-core": "^2.0.0"
+    "@fabrica/node-core": "github:JostinQuilca/FabricaProyecto#pkg/node-core"
   },
   "license": "MIT"
 }
