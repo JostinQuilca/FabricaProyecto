@@ -96,6 +96,14 @@ async function startServer() {
     console.log('  ✓ CA-020 Gestión de Usuarios cargado');
   }
 
+  // CA-022 · Calendario Académico (asset autónomo: no requiere Materias)
+  if (features.isEnabled('CA-022_CalendarioAcademico')) {
+    const { createCalendarioModule, ensureEventosTable } = require('@fabrica/academico');
+    modules.push(createCalendarioModule({ client, auditoria }));
+    if (autoSetup) await ensureEventosTable(client);
+    console.log('  ✓ CA-022 Calendario Académico cargado');
+  }
+
   if (features.isEnabled('CA-016_ModuloMaterias')) {
     const {
       createAcademicoModule, createCalificacionesModule,

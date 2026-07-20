@@ -1,0 +1,77 @@
+/* CA-022 · Calendario Académico — vista mensual */
+:host { display: block; }
+
+.cal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.cal-nav h3 { margin: 0; }
+
+.cal-card { padding: 0.75rem; }
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cal-head { margin-bottom: 4px; }
+
+.cal-dow {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-secondary);
+  padding: 0.4rem 0;
+}
+
+.cal-cell {
+  min-height: 92px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  background: var(--surface-color);
+  overflow: hidden;
+}
+
+.cal-cell.vacia {
+  background: transparent;
+  border-color: transparent;
+}
+
+.cal-cell.hoy {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.cal-cell .num {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 3px;
+}
+
+.cal-cell.hoy .num { color: var(--primary-color); }
+
+.ev {
+  color: #fff;
+  font-size: 0.68rem;
+  line-height: 1.25;
+  padding: 2px 5px;
+  border-radius: 4px;
+  margin-bottom: 2px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 720px) {
+  .cal-cell { min-height: 64px; }
+  .ev { font-size: 0.6rem; }
+}

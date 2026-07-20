@@ -1,0 +1,103 @@
+<div class="page-layout">
+  <header class="page-topbar">
+    <div class="brand-left">
+      <div class="logo">FA</div>
+      <h1>Calendario</h1>
+    </div>
+    <a routerLink="/dashboard" class="btn btn-secondary btn-sm">← Volver al panel</a>
+  </header>
+
+  <main class="page-content">
+    <div class="page-header">
+      <div>
+        <h2>Calendario Académico</h2>
+        <p>Eventos, exámenes y entregas del período (CA-022).</p>
+      </div>
+      <button *ngIf="puedeGestionar()" class="btn btn-primary" (click)="nuevo()">+ Nuevo evento</button>
+    </div>
+
+    <div class="alert-error" *ngIf="error()">{{ error() }}</div>
+
+    <!-- Formulario -->
+    <div class="card" *ngIf="mostrarForm()">
+      <h3>Nuevo evento</h3>
+      <form [formGroup]="form" (ngSubmit)="guardar()">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Título</label>
+            <input class="form-control" formControlName="titulo" placeholder="Ej: Examen parcial">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Fecha</label>
+            <input type="date" class="form-control" formControlName="fechaInicio">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Tipo</label>
+            <select class="form-control" formControlName="tipo">
+              <option *ngFor="let t of TIPOS" [value]="t">{{ t }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Descripción (opcional)</label>
+            <input class="form-control" formControlName="descripcion" placeholder="Detalle del evento">
+          </div>
+        </div>
+        <div class="actions-cell">
+          <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Guardar</button>
+          <button type="button" class="btn btn-secondary" (click)="mostrarForm.set(false)">Cancelar</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Navegación del mes -->
+    <div class="cal-nav card">
+      <button class="btn btn-secondary btn-sm" (click)="mesAnterior()">‹ Anterior</button>
+      <h3>{{ tituloMes() }}</h3>
+      <div class="actions-cell">
+        <button class="btn btn-primary btn-sm" (click)="hoy()">Hoy</button>
+        <button class="btn btn-secondary btn-sm" (click)="mesSiguiente()">Siguiente ›</button>
+      </div>
+    </div>
+
+    <!-- Grilla del mes -->
+    <div class="card cal-card">
+      <div class="cal-grid cal-head">
+        <div class="cal-dow" *ngFor="let d of DIAS">{{ d }}</div>
+      </div>
+      <div class="cal-grid">
+        <div class="cal-cell" *ngFor="let c of celdas()"
+             [class.vacia]="c.dia === null" [class.hoy]="c.esHoy">
+          <div class="num" *ngIf="c.dia">{{ c.dia }}</div>
+          <div class="ev" *ngFor="let e of c.eventos"
+               [style.background]="e.color || colorTipo(e.tipo)"
+               [title]="e.titulo + (e.descripcion ? ' — ' + e.descripcion : '')"
+               (click)="puedeGestionar() && eliminar(e)">
+            {{ e.titulo }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Próximos eventos -->
+    <div class="page-header"><h3>Próximos eventos</h3></div>
+    <div class="table-wrapper card" style="padding:0;">
+      <div class="empty-state" *ngIf="cargando()">Cargando eventos…</div>
+      <div class="empty-state" *ngIf="!cargando() && proximos().length === 0">No hay eventos próximos.</div>
+      <table class="data-table" *ngIf="!cargando() && proximos().length > 0">
+        <thead>
+          <tr><th>Fecha</th><th>Evento</th><th>Tipo</th><th>Descripción</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let e of proximos()">
+            <td>{{ e.fechaInicio | date:'dd/MM/yyyy' }}</td>
+            <td><strong>{{ e.titulo }}</strong></td>
+            <td><span class="badge" [style.background]="e.color || colorTipo(e.tipo)" style="color:#fff;">{{ e.tipo }}</span></td>
+            <td>{{ e.descripcion || '—' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>

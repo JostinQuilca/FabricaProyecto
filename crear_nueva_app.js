@@ -97,6 +97,7 @@ try {
     const auditoriaOn = assets['CA-012_ModeloAuditoria'] !== false;
     const registroOn = assets['CA-007_RegistroAbierto'] !== false;
     const usuariosOn = assets['CA-020_GestionUsuarios'] !== false;
+    const calendarioOn = assets['CA-022_CalendarioAcademico'] !== false;
 
     // =========================================================
     // PASO 1: Copiar backend y frontend (sin packages/)
@@ -152,9 +153,12 @@ try {
     backendPkg.name = projectName.toLowerCase() + '-backend';
     backendPkg.description = `Backend del producto ${projectName}`;
 
-    // Reemplazar dependencias locales por dependencias de GitHub
+    // Reemplazar dependencias locales por dependencias de GitHub.
+    // @fabrica/academico se necesita si hay CUALQUIER módulo de su dominio
+    // activo (Materias o Calendario, que es autónomo pero vive ahí).
     backendPkg.dependencies['@fabrica/node-core'] = `github:${GITHUB_REPO}#pkg/node-core`;
-    if (materiasOn) {
+    const necesitaAcademico = materiasOn || calendarioOn;
+    if (necesitaAcademico) {
         backendPkg.dependencies['@fabrica/academico'] = `github:${GITHUB_REPO}#pkg/academico`;
     } else {
         delete backendPkg.dependencies['@fabrica/academico'];
@@ -199,6 +203,7 @@ try {
     console.log(`  Backend · CA-017 Inscripciones: ${estado(inscripcionesOn)}`);
     console.log(`  Backend · CA-019 Calificaciones:${estado(calificacionesOn)}`);
     console.log(`  Backend · CA-020 Usuarios:      ${estado(usuariosOn)}`);
+    console.log(`  Backend · CA-022 Calendario:    ${estado(calendarioOn)}`);
     console.log(`  Frontend · CA-007 Registro:     ${estado(registroOn)}`);
 
     // --- FRONTEND: poda estática ---
@@ -228,6 +233,13 @@ try {
         // Quitar el acceso rápido a auditoría del panel admin
         const adminHtml = path.join(destFrontend, 'src', 'app', 'pages', 'admin', 'admin.component.html');
         removeFromFile(adminHtml, /\s*<a routerLink="\/auditoria"[\s\S]*?<\/a>/g);
+    }
+    if (!calendarioOn) {
+        podarFrontendModulo('CA-022_CalendarioAcademico', {
+            page: 'calendario',
+            service: 'evento.service.ts',
+            routeRegex: /,\r?\n\s*\/\/ Sprint 2 · CA-022 Calendario Académico\r?\n\s*{\r?\n[\s\S]*?canActivate: \[authGuard\]\r?\n\s*}/g
+        });
     }
     if (!usuariosOn) {
         podarFrontendModulo('CA-020_GestionUsuarios', {

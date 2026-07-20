@@ -36,6 +36,7 @@ export class DashboardComponent implements OnInit {
   hasAuditoria(): boolean { return this.featuresService.isEnabled('CA-012_ModeloAuditoria'); }
   hasCalificaciones(): boolean { return this.featuresService.isEnabled('CA-019_ModuloCalificaciones'); }
   hasGestionUsuarios(): boolean { return this.featuresService.isEnabled('CA-020_GestionUsuarios'); }
+  hasCalendario(): boolean { return this.featuresService.isEnabled('CA-022_CalendarioAcademico'); }
 
   logout() {
     this.authService.logout();

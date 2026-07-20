@@ -71,6 +71,23 @@ const FEATURES_CATALOG = {
     },
     adminCard: { icon: '📝', label: 'Gestionar inscripciones', link: '/inscripciones' }
   },
+  calendario: {
+    id: 'calendario',
+    configKey: 'CA-022_CalendarioAcademico',
+    nombre: 'Calendario Académico',
+    descripcion: 'Eventos, exámenes y entregas en vista mensual.',
+    backendDep: '@fabrica/academico',
+    frontendDirs: ['frontend/src/app/pages/calendario'],
+    frontendFiles: ['frontend/src/app/services/evento.service.ts'],
+    dependsOn: [],
+    route: {
+      comment: '// Sprint 2 · CA-022 Calendario Académico',
+      path: 'calendario',
+      componentName: 'CalendarioComponent',
+      importPath: './pages/calendario/calendario.component'
+    },
+    adminCard: { icon: '📅', label: 'Calendario académico', link: '/calendario' }
+  },
   usuarios: {
     id: 'usuarios',
     configKey: 'CA-020_GestionUsuarios',

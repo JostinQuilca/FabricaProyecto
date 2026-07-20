@@ -34,6 +34,7 @@
           <a *ngIf="hasMaterias()" routerLink="/materias" class="module-card">📚 Gestión de Materias</a>
           <a *ngIf="hasInscripciones()" routerLink="/inscripciones" class="module-card">📝 Gestión de Inscripciones</a>
           <a *ngIf="hasCalificaciones()" routerLink="/calificaciones" class="module-card">🎯 Calificaciones</a>
+          <a *ngIf="hasCalendario()" routerLink="/calendario" class="module-card">📅 Calendario</a>
           <a *ngIf="hasAuditoria()" routerLink="/auditoria" class="module-card">🔍 Registro de Auditoría</a>
         </ng-container>
 
@@ -42,6 +43,7 @@
           <a *ngIf="hasMaterias()" routerLink="/materias" class="module-card">📚 Mis Materias</a>
           <a *ngIf="hasInscripciones()" routerLink="/inscripciones" class="module-card">📝 Inscripciones</a>
           <a *ngIf="hasCalificaciones()" routerLink="/calificaciones" class="module-card">🎯 Calificaciones</a>
+          <a *ngIf="hasCalendario()" routerLink="/calendario" class="module-card">📅 Calendario</a>
         </ng-container>
 
         <!-- ESTUDIANTE MODULES -->
@@ -49,6 +51,7 @@
           <a *ngIf="hasMaterias()" routerLink="/materias" class="module-card">📚 Catálogo de Materias</a>
           <a *ngIf="hasInscripciones()" routerLink="/inscripciones" class="module-card">📝 Mis Inscripciones</a>
           <a *ngIf="hasCalificaciones()" routerLink="/calificaciones" class="module-card">🎯 Mis Notas</a>
+          <a *ngIf="hasCalendario()" routerLink="/calendario" class="module-card">📅 Calendario</a>
         </ng-container>
 
         <div class="empty-state" *ngIf="user?.rol !== Role.ADMIN && !hasMaterias() && !hasInscripciones()">

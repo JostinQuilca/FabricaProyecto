@@ -45,6 +45,12 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/calificaciones/calificaciones.component').then(c => c.CalificacionesComponent),
     canActivate: [authGuard]
   },
+  // Sprint 2 · CA-022 Calendario Académico
+  {
+    path: 'calendario',
+    loadComponent: () => import('./pages/calendario/calendario.component').then(c => c.CalendarioComponent),
+    canActivate: [authGuard]
+  },
   // Sprint 2 · CA-020 Gestión de Usuarios (exclusivo ADMIN)
   {
     path: 'usuarios',
