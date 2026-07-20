@@ -77,4 +77,41 @@ async function ensureCalificacionesTable(client) {
   console.log('  ✅ CA-019: tabla calificaciones verificada');
 }
 
-module.exports = { ensureMateriasTable, ensureInscripcionesTable, ensureCalificacionesTable };
+/** DDL del CA-022 (Calendario Académico) + eventos de ejemplo. Idempotente. */
+async function ensureEventosTable(client, { seed = true } = {}) {
+  await client.query(`
+    CREATE TABLE IF NOT EXISTS eventos (
+        id SERIAL PRIMARY KEY,
+        titulo VARCHAR(150) NOT NULL,
+        descripcion TEXT,
+        fecha_inicio TIMESTAMP NOT NULL,
+        fecha_fin TIMESTAMP,
+        tipo VARCHAR(20) NOT NULL DEFAULT 'OTRO',
+        color VARCHAR(20),
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS idx_eventos_fecha ON eventos(fecha_inicio);
+    CREATE INDEX IF NOT EXISTS idx_eventos_tipo ON eventos(tipo);
+  `);
+  if (seed) {
+    // Eventos de ejemplo relativos a HOY, para que el calendario no nazca vacío
+    await client.query(`
+      INSERT INTO eventos (titulo, descripcion, fecha_inicio, tipo, color)
+      SELECT * FROM (VALUES
+        ('Inicio de clases',      'Arranque del período académico', NOW() + INTERVAL '1 day',   'CLASE',   '#2563eb'),
+        ('Entrega de proyecto',   'Primera entrega del proyecto integrador', NOW() + INTERVAL '7 day', 'ENTREGA', '#f59e0b'),
+        ('Examen parcial',        'Evaluación del primer parcial',  NOW() + INTERVAL '14 day',  'EXAMEN',  '#dc2626')
+      ) AS v(titulo, descripcion, fecha_inicio, tipo, color)
+      WHERE NOT EXISTS (SELECT 1 FROM eventos);
+    `);
+  }
+  console.log('  ✅ CA-022: tabla eventos verificada');
+}
+
+module.exports = {
+  ensureMateriasTable,
+  ensureInscripcionesTable,
+  ensureCalificacionesTable,
+  ensureEventosTable,
+};
