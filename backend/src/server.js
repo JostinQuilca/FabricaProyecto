@@ -125,6 +125,16 @@ async function startServer() {
       if (autoSetup) await ensureCalificacionesTable(client);
       console.log('  ✓ CA-019 Calificaciones cargado');
     }
+
+    // CA-023 · Horarios de clase (requiere CA-016)
+    if (features.isEnabled('CA-023_HorarioClases')) {
+      const { createHorariosModule, ensureHorariosTable } = require('@fabrica/academico');
+      modules.push(createHorariosModule({
+        client, materiaModel: academicoModule.models.Materia, usuarioModel: Usuario, auditoria,
+      }));
+      if (autoSetup) await ensureHorariosTable(client);
+      console.log('  ✓ CA-023 Horarios cargado');
+    }
   }
 
   const { typeDefs, resolvers } = composeModules(modules);

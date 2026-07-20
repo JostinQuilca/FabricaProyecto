@@ -6,9 +6,13 @@ const { createMateriaModel } = require('./materia.model');
 const { createInscripcionModel } = require('./inscripcion.model');
 const { academicoTypeDefs } = require('./typeDefs');
 const { buildAcademicoResolvers } = require('./resolvers');
-const { ensureMateriasTable, ensureInscripcionesTable, ensureCalificacionesTable, ensureEventosTable } = require('./db-schema');
+const {
+  ensureMateriasTable, ensureInscripcionesTable, ensureCalificacionesTable,
+  ensureEventosTable, ensureHorariosTable,
+} = require('./db-schema');
 const { createCalificacionesModule } = require('./calificaciones.module');
 const { createCalendarioModule, TIPOS_EVENTO } = require('./calendario.module');
+const { createHorariosModule, DIAS_SEMANA } = require('./horarios.module');
 
 /**
  * Crea el módulo académico listo para componer con el esquema base.
@@ -33,9 +37,12 @@ module.exports = {
   createAcademicoModule,
   createCalificacionesModule,
   createCalendarioModule,
+  createHorariosModule,
   TIPOS_EVENTO,
+  DIAS_SEMANA,
   ensureMateriasTable,
   ensureInscripcionesTable,
   ensureCalificacionesTable,
   ensureEventosTable,
+  ensureHorariosTable,
 };

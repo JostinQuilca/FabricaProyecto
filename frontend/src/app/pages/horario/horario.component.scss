@@ -1,0 +1,106 @@
+/* CA-023 · Horario de clases — vista semanal por columnas */
+:host { display: block; }
+
+.hor-resumen {
+  display: flex;
+  gap: 2.5rem;
+  margin-bottom: 1rem;
+  padding: 0.9rem 1.25rem;
+
+  div { display: flex; align-items: baseline; gap: 0.4rem; }
+
+  .valor {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--primary-color);
+  }
+  .etiqueta {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+  }
+}
+
+.hor-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.hor-col {
+  padding: 0.75rem;
+
+  h4 {
+    margin: 0 0 0.6rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-secondary);
+    text-align: center;
+    padding-bottom: 0.45rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+}
+
+.hor-vacio {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 0.75rem 0;
+}
+
+.hor-clase {
+  position: relative;
+  background: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--primary-color);
+  border-radius: var(--radius-md);
+  padding: 0.5rem 0.55rem;
+  margin-bottom: 0.5rem;
+
+  .hora {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .materia {
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.25;
+    margin: 2px 0;
+  }
+  .meta {
+    font-size: 0.68rem;
+    color: var(--text-secondary);
+  }
+  .codigo { font-weight: 600; }
+}
+
+/* Botón de borrado: solo visible al pasar el mouse sobre la clase */
+.hor-borrar {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  opacity: 0;
+  border: none;
+  background: transparent;
+  color: var(--error-color);
+  cursor: pointer;
+  font-size: 0.75rem;
+  line-height: 1;
+  padding: 2px 4px;
+  transition: opacity 0.15s ease;
+}
+
+.hor-clase:hover .hor-borrar { opacity: 1; }
+
+@media (max-width: 1100px) {
+  .hor-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 640px) {
+  .hor-grid { grid-template-columns: 1fr; }
+  .hor-resumen { gap: 1.25rem; }
+}

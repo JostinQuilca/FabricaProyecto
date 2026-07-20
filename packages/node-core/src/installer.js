@@ -123,6 +123,23 @@ const FEATURES_CATALOG = {
       importPath: './pages/calificaciones/calificaciones.component'
     },
     adminCard: { icon: '🎯', label: 'Gestionar calificaciones', link: '/calificaciones' }
+  },
+  horario: {
+    id: 'horario',
+    configKey: 'CA-023_HorarioClases',
+    nombre: 'Horario de clases',
+    descripcion: 'Distribución semanal de materias por día, hora y aula.',
+    backendDep: '@fabrica/academico',
+    frontendDirs: ['frontend/src/app/pages/horario'],
+    frontendFiles: ['frontend/src/app/services/horario.service.ts'],
+    dependsOn: ['materias'],
+    route: {
+      comment: '// Sprint 2 · CA-023 Horario de clases',
+      path: 'horario',
+      componentName: 'HorarioComponent',
+      importPath: './pages/horario/horario.component'
+    },
+    adminCard: { icon: '🕒', label: 'Horario de clases', link: '/horario' }
   }
 };
 

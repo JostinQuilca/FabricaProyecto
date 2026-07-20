@@ -36,7 +36,8 @@
         "CA-017_ModuloInscripciones": true,
         "CA-019_ModuloCalificaciones": true,
         "CA-020_GestionUsuarios": true,
-        "CA-022_CalendarioAcademico": true
+        "CA-022_CalendarioAcademico": true,
+        "CA-023_HorarioClases": true
       }
     },
     "_ayuda_tema": "CA-021: variabilidad PARAMÉTRICA (no se activa/desactiva, se configura). El generador inyecta estos valores en el styles.scss del producto.",

@@ -37,6 +37,7 @@ const LABELS = {
   'CA-019_ModuloCalificaciones': 'Calificaciones — notas por materia (requiere Materias)',
   'CA-020_GestionUsuarios': 'Gestión de Usuarios — crear estudiantes/docentes desde el panel admin',
   'CA-022_CalendarioAcademico': 'Calendario Académico — eventos, exámenes y entregas (vista mensual)',
+  'CA-023_HorarioClases': 'Horario de clases — distribución semanal por día y aula (requiere Materias)',
   'CA-018_SetupBD_Automatico': 'Setup BD automático — crea la base y las tablas al arrancar',
 };
 

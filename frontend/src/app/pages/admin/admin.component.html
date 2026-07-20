@@ -66,6 +66,10 @@
         <div class="value">📅</div>
         <div class="label">Calendario académico</div>
       </a>
+      <a *ngIf="hasHorario()" routerLink="/horario" class="stat-card" style="text-decoration:none;">
+        <div class="value">🕒</div>
+        <div class="label">Horario de clases</div>
+      </a>
       <!-- add-feature:insert-here -->
     </div>
 

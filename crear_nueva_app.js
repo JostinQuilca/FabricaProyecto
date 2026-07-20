@@ -98,6 +98,7 @@ try {
     const registroOn = assets['CA-007_RegistroAbierto'] !== false;
     const usuariosOn = assets['CA-020_GestionUsuarios'] !== false;
     const calendarioOn = assets['CA-022_CalendarioAcademico'] !== false;
+    const horarioOn = materiasOn && assets['CA-023_HorarioClases'] !== false;
 
     // =========================================================
     // PASO 1: Copiar backend y frontend (sin packages/)
@@ -204,6 +205,7 @@ try {
     console.log(`  Backend · CA-019 Calificaciones:${estado(calificacionesOn)}`);
     console.log(`  Backend · CA-020 Usuarios:      ${estado(usuariosOn)}`);
     console.log(`  Backend · CA-022 Calendario:    ${estado(calendarioOn)}`);
+    console.log(`  Backend · CA-023 Horario:       ${estado(horarioOn)}`);
     console.log(`  Frontend · CA-007 Registro:     ${estado(registroOn)}`);
 
     // --- FRONTEND: poda estática ---
@@ -246,6 +248,13 @@ try {
             page: 'usuarios',
             service: 'usuario.service.ts',
             routeRegex: /,\r?\n\s*\/\/ Sprint 2 · CA-020 Gestión de Usuarios\r?\n\s*{\r?\n[\s\S]*?data: \{ roles: \['ADMIN'\] \}\r?\n\s*}/g
+        });
+    }
+    if (!horarioOn) {
+        podarFrontendModulo('CA-023_HorarioClases', {
+            page: 'horario',
+            service: 'horario.service.ts',
+            routeRegex: /,\r?\n\s*\/\/ Sprint 2 · CA-023 Horario de clases\r?\n\s*{\r?\n[\s\S]*?canActivate: \[authGuard\]\r?\n\s*}/g
         });
     }
     if (!calificacionesOn) {

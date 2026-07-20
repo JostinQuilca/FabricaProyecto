@@ -109,9 +109,30 @@ async function ensureEventosTable(client, { seed = true } = {}) {
   console.log('  ✅ CA-022: tabla eventos verificada');
 }
 
+/** DDL del CA-023 (Horarios). Requiere materias y usuarios (FK). Idempotente. */
+async function ensureHorariosTable(client) {
+  await client.query(`
+    CREATE TABLE IF NOT EXISTS horarios (
+        id SERIAL PRIMARY KEY,
+        materia_id INTEGER NOT NULL REFERENCES materias(id) ON DELETE CASCADE,
+        dia VARCHAR(12) NOT NULL,
+        hora_inicio TIME NOT NULL,
+        hora_fin TIME NOT NULL,
+        aula VARCHAR(60),
+        docente_id INTEGER REFERENCES usuarios(id) ON DELETE SET NULL,
+        created_at TIMESTAMP DEFAULT NOW(),
+        CONSTRAINT ck_horario_rango CHECK (hora_fin > hora_inicio)
+    );
+    CREATE INDEX IF NOT EXISTS idx_horarios_materia ON horarios(materia_id);
+    CREATE INDEX IF NOT EXISTS idx_horarios_dia ON horarios(dia);
+  `);
+  console.log('  ✅ CA-023: tabla horarios verificada');
+}
+
 module.exports = {
   ensureMateriasTable,
   ensureInscripcionesTable,
   ensureCalificacionesTable,
   ensureEventosTable,
+  ensureHorariosTable,
 };
