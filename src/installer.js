@@ -71,6 +71,23 @@ const FEATURES_CATALOG = {
     },
     adminCard: { icon: '📝', label: 'Gestionar inscripciones', link: '/inscripciones' }
   },
+  calendario: {
+    id: 'calendario',
+    configKey: 'CA-022_CalendarioAcademico',
+    nombre: 'Calendario Académico',
+    descripcion: 'Eventos, exámenes y entregas en vista mensual.',
+    backendDep: '@fabrica/academico',
+    frontendDirs: ['frontend/src/app/pages/calendario'],
+    frontendFiles: ['frontend/src/app/services/evento.service.ts'],
+    dependsOn: [],
+    route: {
+      comment: '// Sprint 2 · CA-022 Calendario Académico',
+      path: 'calendario',
+      componentName: 'CalendarioComponent',
+      importPath: './pages/calendario/calendario.component'
+    },
+    adminCard: { icon: '📅', label: 'Calendario académico', link: '/calendario' }
+  },
   usuarios: {
     id: 'usuarios',
     configKey: 'CA-020_GestionUsuarios',
@@ -106,6 +123,23 @@ const FEATURES_CATALOG = {
       importPath: './pages/calificaciones/calificaciones.component'
     },
     adminCard: { icon: '🎯', label: 'Gestionar calificaciones', link: '/calificaciones' }
+  },
+  horario: {
+    id: 'horario',
+    configKey: 'CA-023_HorarioClases',
+    nombre: 'Horario de clases',
+    descripcion: 'Distribución semanal de materias por día, hora y aula.',
+    backendDep: '@fabrica/academico',
+    frontendDirs: ['frontend/src/app/pages/horario'],
+    frontendFiles: ['frontend/src/app/services/horario.service.ts'],
+    dependsOn: ['materias'],
+    route: {
+      comment: '// Sprint 2 · CA-023 Horario de clases',
+      path: 'horario',
+      componentName: 'HorarioComponent',
+      importPath: './pages/horario/horario.component'
+    },
+    adminCard: { icon: '🕒', label: 'Horario de clases', link: '/horario' }
   }
 };
 
